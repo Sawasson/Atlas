@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atlas", "Atlas\Atlas.csproj", "{05D89640-4DBA-4B5E-95AD-B28B4609930C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jawabkom-Generator3", "Jawabkom-Generator3\Jawabkom-Generator3.csproj", "{7E62636D-06CE-4B93-8B92-F922B500248D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jawabkom-Generator3", "Jawabkom-Generator3\Jawabkom-Generator3.csproj", "{7E62636D-06CE-4B93-8B92-F922B500248D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IF.Csv", "IF.Csv\IF.Csv.csproj", "{17BB6C58-158B-4A42-AE4D-9390F26C7A3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{7E62636D-06CE-4B93-8B92-F922B500248D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E62636D-06CE-4B93-8B92-F922B500248D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E62636D-06CE-4B93-8B92-F922B500248D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17BB6C58-158B-4A42-AE4D-9390F26C7A3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17BB6C58-158B-4A42-AE4D-9390F26C7A3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17BB6C58-158B-4A42-AE4D-9390F26C7A3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17BB6C58-158B-4A42-AE4D-9390F26C7A3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

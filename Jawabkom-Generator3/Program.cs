@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+
 using TinyCsvParser;
 using TinyCsvParser.Mapping;
 
@@ -11,17 +13,28 @@ namespace Jawabkom_Generator3
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            int dataRange = 1;
-            int oldestRange = 50;
-            int last30 = 30;
-            string[] adnetworksUtm5 = { "Kimia", "Mobip", "IMOCa", "Mobid" };
-            string[] googleUtm5 = { "GoogleAds-JAWAB", "GoogleDisplay", "GoogleAds-JAWABENGLISH" };
-            string[] parseDates = { "created_date", "tpay_activated_date"};
 
-            string filePath = "C:/Users/savas/Downloads/revenues_last.xls";
-            var lastId = CsvReader(filePath).LastOrDefault().Result.Line;
+            try
+            {
+              await  Jawabkom.Execute();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+            //int dataRange = 1;
+            //int oldestRange = 50;
+            //int last30 = 30;
+            //string[] adnetworksUtm5 = { "Kimia", "Mobip", "IMOCa", "Mobid" };
+            //string[] googleUtm5 = { "GoogleAds-JAWAB", "GoogleDisplay", "GoogleAds-JAWABENGLISH" };
+            //string[] parseDates = { "created_date", "tpay_activated_date"};
+
+            //string filePath = "C:/Users/savas/Downloads/revenues_last.xls";
+            //var lastId = CsvReader(filePath).LastOrDefault().Result.Line;
 
         }
 
