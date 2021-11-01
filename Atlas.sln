@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atlas", "Atlas\Atlas.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jawabkom-Generator3", "Jawabkom-Generator3\Jawabkom-Generator3.csproj", "{7E62636D-06CE-4B93-8B92-F922B500248D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IF.Csv", "IF.Csv\IF.Csv.csproj", "{17BB6C58-158B-4A42-AE4D-9390F26C7A3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IF.Csv", "IF.Csv\IF.Csv.csproj", "{17BB6C58-158B-4A42-AE4D-9390F26C7A3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jawabsale-Generator", "Jawabsale-Generator\Jawabsale-Generator.csproj", "{68746175-EC26-4AA8-85D0-C0E3D99F579C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{17BB6C58-158B-4A42-AE4D-9390F26C7A3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17BB6C58-158B-4A42-AE4D-9390F26C7A3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17BB6C58-158B-4A42-AE4D-9390F26C7A3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68746175-EC26-4AA8-85D0-C0E3D99F579C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68746175-EC26-4AA8-85D0-C0E3D99F579C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68746175-EC26-4AA8-85D0-C0E3D99F579C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68746175-EC26-4AA8-85D0-C0E3D99F579C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

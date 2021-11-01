@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Jawabkom_Generator3.Core
+namespace Jawabsale_Generator.Core
 {
     public class SubscriptionRevenueParser : IPaseringAsync<SubscriptionRevenue>
     {
@@ -23,7 +23,7 @@ namespace Jawabkom_Generator3.Core
 
             ParserResult result = new ParserResult();
 
-            if (item.payment_gateway != "tpay" && item.is_demo != 0)
+            if (item.is_demo != 0)
             {
                 result.SkipThis = true;
                 return result;

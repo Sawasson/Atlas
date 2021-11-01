@@ -43,5 +43,6 @@ namespace Jawabkom_Generator3.Core
         //public bool IsPaid { get; set; }
 
         public bool IsTrial { get; set; }
+
     }
 }

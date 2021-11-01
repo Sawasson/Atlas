@@ -13,6 +13,7 @@ namespace Jawabkom_Generator3.Core
 
         static MongoDbGenericRepository db = new MongoDbGenericRepository("mongodb://marketing:Marketing2019!@157.90.29.241:27017", "NewProject");
 
+
         public static async Task<Subscription> GetSubscriptionLastRecord(string Project)
         {
             var filterBuilder = Builders<Subscription>.Filter;
@@ -20,5 +21,11 @@ namespace Jawabkom_Generator3.Core
             var row = await db.GetTable<Subscription>(nameof(Subscription)).Find(filter).SortByDescending(c => c.unique_id).FirstOrDefaultAsync();
             return row;
         }
+
+        public static async Task AddMany<T>(List<T> data)
+        {
+            await db.AddManyAsync<T>(data);
+        }
+
     }
 }

@@ -94,6 +94,11 @@ namespace Jawabkom_Generator3.Core
             await this.GetTable<T>(tableName).InsertOneAsync(item).ConfigureAwait(false);
         }
 
+        public async Task AddManyAsync<T>(List<T> item)
+        {
+            await this.GetQuery<T>().InsertManyAsync(item).ConfigureAwait(false);
+        }
+
         public void Add<T>(T item)
         {
             this.GetQuery<T>().InsertOne(item);

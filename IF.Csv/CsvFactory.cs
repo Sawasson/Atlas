@@ -117,7 +117,7 @@ namespace CsvFramework
                             }
                             catch (Exception ex)
                             {
-
+                                throw ex;
                             }
                         }
                         else

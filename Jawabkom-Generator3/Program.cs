@@ -1,8 +1,13 @@
 ﻿using Atlas;
+using CsvFramework;
+using GoogleSheetsHelper;
+using Jawabkom_Generator3.Core;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,25 +21,37 @@ namespace Jawabkom_Generator3
         static async Task Main(string[] args)
         {
 
-            try
-            {
-              await  Jawabkom.Execute();
-            }
-            catch (Exception ex)
-            {
 
-                throw;
-            }
+            await Jawabkom.RawRevenuesLastMonthly();
 
-            //int dataRange = 1;
-            //int oldestRange = 50;
-            //int last30 = 30;
-            //string[] adnetworksUtm5 = { "Kimia", "Mobip", "IMOCa", "Mobid" };
-            //string[] googleUtm5 = { "GoogleAds-JAWAB", "GoogleDisplay", "GoogleAds-JAWABENGLISH" };
-            //string[] parseDates = { "created_date", "tpay_activated_date"};
+            var lists = await Jawabkom.NewLTVSameMonth();
 
-            //string filePath = "C:/Users/savas/Downloads/revenues_last.xls";
-            //var lastId = CsvReader(filePath).LastOrDefault().Result.Line;
+            await Jawabkom.RawFinalReportMonthly(lists);
+
+            await Jawabkom.LTVModels(lists);
+
+            await Jawabkom.DailyCost();
+
+            await Jawabkom.RawMonthlyClicks();
+
+
+
+
+
+
+
+            //////GET GOOGLE SHEETS DATA
+            //var sheet = GoogleSheetsKeys.RawMonthlyClicks();
+            //var gsh = new GoogleSheetsHelper.GoogleSheetsHelper(sheet.FilePath, sheet.Key);
+            //var gsp = new GoogleSheetParameters() { RangeColumnStart = 1, RangeRowStart = 1, RangeColumnEnd = 20, RangeRowEnd = 30000, FirstRowIsHeaders = true, SheetName = sheet.SheetTitle };
+            //var rowValues = gsh.GetDataFromSheet(gsp);
+            //ExcelFactory.ExportExcelTable(rowValues, sheet.SheetTitle);
+            //////CONVERT GOOGLE SHEETS TO CORE CLASS
+            //DataBuilder.CurrencyGenerator(rowValues);
+
+
+
+
 
         }
 
