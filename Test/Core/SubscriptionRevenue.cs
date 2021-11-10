@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JawabTawzeef.Core
+namespace Test.Core
 {
     public class SubscriptionRevenue
     {
@@ -13,6 +13,7 @@ namespace JawabTawzeef.Core
         //public int subscription_id { get; set; }
         //public int next_subscription_id { get; set; }
         public string created_date { get; set; }
+        public DateTime created_datex { get; set; }
 
         //public string created_time { get; set; }
         public int is_first_sub { get; set; }
@@ -54,7 +55,6 @@ namespace JawabTawzeef.Core
         //public string funnel_lp_slug { get; set; }
         //public int phone_confirmed_by_tpay_enreachment { get; set; }
         public string tpay_activated_date { get; set; }
-
         //public string tpay_activated_time { get; set; }
         //public string approval_method { get; set; }
         public string operator_name { get; set; }

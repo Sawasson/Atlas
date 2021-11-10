@@ -1,6 +1,6 @@
 ﻿using CsvFramework;
 using CsvHelper;
-using JawabTawzeef.Core;
+using JawabMehan.Core;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,9 +11,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JawabTawzeef
+
+namespace JawabMehan
 {
-    public class JawabTawzeef
+    public class JawabMehan
     {
         public static async Task<Tuple<List<SubscriptionRevenue>>> RawRevenuesLastDaily()
         {
@@ -135,7 +136,7 @@ namespace JawabTawzeef
 
         }
 
-        public static async Task RawRevenuesLastMonthly(Tuple<List<SubscriptionRevenue>> list) 
+        public static async Task RawRevenuesLastMonthly(Tuple<List<SubscriptionRevenue>> list)
         {
             var revenue = list.Item1;
 
@@ -513,7 +514,7 @@ namespace JawabTawzeef
 
             dailyCost = dailyCost.Concat(dailyCostOld).ToList();
 
-            dailyCost = dailyCost.Where(x => x.Dom == "TAWZEEF_EN" || x.Dom == "TAWZEEF_AR" ).ToList();
+            dailyCost = dailyCost.Where(x => x.Dom == "JAWABMANZEL").ToList();
 
             //await CsvWriter(dailyCost, "daily_costx");
 
@@ -572,29 +573,6 @@ namespace JawabTawzeef
 
         public static async Task RawMonthlyClicks(List<DailyCost> list)
         {
-
-            //var DailyCostCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\DailyCost-csv");
-
-            //var dailyCost = await ParseDailyCost(DailyCostCSV);
-
-            //var DailyCostOldCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\DailyCostOld-csv");
-
-            //var dailyCostOld = await ParseDailyCost(DailyCostOldCSV);
-
-            //DateTime Date2021 = new DateTime(2021, 1, 1);
-
-
-            //dailyCostOld = dailyCostOld.Where(x => x.Date <= Date2021).ToList();
-            //dailyCost = dailyCost.Where(x => x.Date >= Date2021).ToList();
-
-            //dailyCost = dailyCost.Concat(dailyCostOld).ToList();
-
-            //dailyCost = dailyCost.Where(x => x.Dom == "TAWZEEF_EN" || x.Dom == "TAWZEEF_AR").ToList();
-
-            //foreach (var item in dailyCost)
-            //{
-            //    item.TotalCost = item.SearchCost + item.GDNCost;
-            //}
 
             var dailyCost = list;
 
@@ -791,7 +769,7 @@ namespace JawabTawzeef
         {
             HttpClient httpClient = new HttpClient();
 
-            string currencyLink = "http://www.apilayer.net/api/live?access_key=152056bca33a250da4dbbc38b8a021e0&format=1";
+            string currencyLink = "http://www.apilayer.net/api/live?access_key=602a9c6d2e8698e65c4eaabf965d87ac&format=1";
 
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(currencyLink));
 
@@ -847,15 +825,8 @@ namespace JawabTawzeef
 
         public static async Task CsvWriter<T>(List<T> list, string fileName)
         {
-            //string path = "C:/Users/savas/Desktop/list.csv";
-
-            //using (var writer = new StreamWriter(path))
-            //using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-            //{
-            //    csv.WriteRecords(list);
-            //}
             string filePath = fileName + ".csv";
-            var exportPath = Path.Combine(@"C:\temp\Tawzeef\OutData\", filePath);
+            var exportPath = Path.Combine(@"C:\temp\Mehan\OutData\", filePath);
             using (TextWriter writer = new StreamWriter(exportPath, false, System.Text.Encoding.UTF8))
             {
                 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
@@ -880,6 +851,5 @@ namespace JawabTawzeef
 
             return date;
         }
-
     }
 }

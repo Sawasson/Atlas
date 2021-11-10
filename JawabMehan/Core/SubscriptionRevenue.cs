@@ -88,5 +88,6 @@ namespace JawabMehan.Core
         //public string index { get; set; }
         //public double quotes { get; set; }
         //public string payout_percentage { get; set; }
+
     }
 }

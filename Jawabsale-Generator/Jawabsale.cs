@@ -1,11 +1,13 @@
 ﻿using CsvFramework;
 using CsvHelper;
 using Jawabsale_Generator.Core;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -716,5 +718,58 @@ namespace Jawabsale_Generator
                     csv.WriteRecords(list); // where values implements IEnumerable
             }
         }
+
+        private static async Task<List<Currency>> CurrencyExport()
+        {
+            HttpClient httpClient = new HttpClient();
+
+            string currencyLink = "http://www.apilayer.net/api/live?access_key=602a9c6d2e8698e65c4eaabf965d87ac&format=1";
+
+
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(currencyLink));
+
+            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var currency = JsonConvert.DeserializeObject<CurrencyJson>(data);
+
+            List<Currency> currencies = new List<Currency>();
+
+            if (currency.success)
+            {
+                currency.quotes["USDLYD"] = 7.9;
+                currency.quotes["USDILS"] = 3.84;
+                currency.quotes["USDTND"] = 2.85;
+                currency.quotes["USDEGP"] = 16;
+                currency.quotes["USDQAR"] = 3.72;
+
+                foreach (var keyValuePair in currency.quotes)
+                {
+                    Currency currencyItem = new Currency()
+                    {
+                        index = keyValuePair.Key,
+                        quotes = keyValuePair.Value,
+                        currency_code = TruncateLongString(keyValuePair.Key, 3, 3)
+                    };
+
+                    currencies.Add(currencyItem);
+                }
+
+                //await this.repository.InsertMany(currencies, "Currency", true);
+                //string csv = ToCsv<Currency>(",", currencies);
+                //System.IO.File.WriteAllText(@"c:\reports\currency.csv", csv);
+                return currencies;
+
+            }
+            else
+            {
+                //throw new BusinessException("currency fetch error", "10988");
+                throw new Exception("currency fetch error");
+
+            }
+
+        }
+
     }
 }

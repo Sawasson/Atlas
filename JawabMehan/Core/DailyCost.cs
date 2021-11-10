@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JawabTawzeef.Core
+namespace JawabMehan.Core
 {
     public class DailyCost
     {
@@ -25,7 +25,6 @@ namespace JawabTawzeef.Core
         public int GDNClicks { get; set; }
         public decimal TotalCost { get; set; }
         public int Total_Clicks { get; set; }
-
 
     }
 }

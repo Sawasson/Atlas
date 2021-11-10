@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HawiyyahGenerator", "Hawiyy
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JawabTawzeef", "JawabTawzeef\JawabTawzeef.csproj", "{82A49471-F6B1-40DA-AAD7-89A2EDACB303}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JawabMehan", "JawabMehan\JawabMehan.csproj", "{7E7083C0-97CB-4BC3-829A-D0F0EDCC76C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JawabMehan", "JawabMehan\JawabMehan.csproj", "{7E7083C0-97CB-4BC3-829A-D0F0EDCC76C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{5468BDAD-785B-42A4-8309-16F02AD45B75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{7E7083C0-97CB-4BC3-829A-D0F0EDCC76C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E7083C0-97CB-4BC3-829A-D0F0EDCC76C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E7083C0-97CB-4BC3-829A-D0F0EDCC76C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5468BDAD-785B-42A4-8309-16F02AD45B75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5468BDAD-785B-42A4-8309-16F02AD45B75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5468BDAD-785B-42A4-8309-16F02AD45B75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5468BDAD-785B-42A4-8309-16F02AD45B75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

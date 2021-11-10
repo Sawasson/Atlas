@@ -691,7 +691,7 @@ namespace HawiyyahGenerator
         {
             HttpClient httpClient = new HttpClient();
 
-            string currencyLink = "http://www.apilayer.net/api/live?access_key=744f84b0a99557d519fb07a7c4b9b3fa&format=1";
+            string currencyLink = "http://www.apilayer.net/api/live?access_key=152056bca33a250da4dbbc38b8a021e0&format=1";
 
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(currencyLink));
 

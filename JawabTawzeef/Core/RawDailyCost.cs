@@ -8,7 +8,7 @@ namespace JawabTawzeef.Core
 {
     public class RawDailyCost
     {
-        public DateTime created_date { get; set; }
+        public string created_date { get; set; }
         public string country_code { get; set; }
         public decimal SearchCost { get; set; }
         public decimal GDNCost { get; set; }

@@ -11,11 +11,10 @@ namespace JawabTawzeef
         {
             //var list = await JawabTawzeef.RawRevenuesLastDaily();
             //await JawabTawzeef.RawRevenuesLastMonthly(list);
-            var list2 = await JawabTawzeef.New_LTV_SAMEMONTH();
-            await JawabTawzeef.RawFinalReportMonthly(list2);
-            await JawabTawzeef.RawDailyCost();
-
-            await JawabTawzeef.RawMonthlyClicks();
+            //var list2 = await JawabTawzeef.New_LTV_SAMEMONTH();
+            //await JawabTawzeef.RawFinalReportMonthly(list2);
+            var costList = await JawabTawzeef.RawDailyCost();
+            await JawabTawzeef.RawMonthlyClicks(costList);
 
         }
     }

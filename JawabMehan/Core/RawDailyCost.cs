@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JawabTawzeef.Core
+namespace JawabMehan.Core
 {
-    public class RawMonthlyClicks
+    public class RawDailyCost
     {
         public string created_date { get; set; }
         public string country_code { get; set; }
-        public int Clicks { get; set; }
-        public int GDNClicks { get; set; }
-        public int Total_Clicks { get; set; }
+        public decimal SearchCost { get; set; }
+        public decimal GDNCost { get; set; }
+        public decimal TotalCost { get; set; }
+
 
     }
 }
