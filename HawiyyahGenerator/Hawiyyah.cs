@@ -1,44 +1,45 @@
 ﻿using CsvFramework;
 using CsvHelper;
-using Jawabsale_Generator.Core;
+using HawiyyahGenerator.Core;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jawabsale_Generator
+namespace HawiyyahGenerator
 {
-    public class Jawabsale
+    public class Hawiyyah
     {
-        public static List<SubscriptionRevenue> allSubs { get; set; }
+        //string[] CPA_TOOL_SETTING = new string[]{ "HAWEYYA_ENGLISH", "HAWEYYA_ARABIC", "HAWEYYA_CC_ENGLISH" };
+        
+        //string[] CPA_TOOL_SETTING_HAWEYYA = new string[] { "HAWEYYA_ENGLISH", "HAWEYYA_ARABIC" };
 
-        public static List<OperatorPayout> allPayouts { get; set; }
-
-        public static List<Currency> currencyList { get; set; }
-
-        public static ILookup<string, Currency> lookupCurrency { get; set; }
-
-        public static ILookup<string, OperatorPayout> lookupPayouts { get; set; }
-
-
+        //string[] CPA_TOOL_SETTING_PEOPLEREVEAL = new string[] { "HAWEYYA_CC_ENGLISH" };
 
         public static async Task RevenuesLast()
         {
-            var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Jawabsale\Base\SALE-subs-55419400.csv");
+            var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Hawiyyah\Base\HAWIYYAH-subs-2304771.csv");
+            var allSubs = await ParseSubscriptions(AllSubsCSV);
 
-            allSubs = await ParseSubscriptions(AllSubsCSV);
 
-            var PayoutsCSV = System.IO.File.ReadAllLines(@"C:\temp\Jawabsale\Base\OperatorPayouts-Jawabsale.csv");
+            allSubs = DomainParser(allSubs);
 
-            allPayouts = await ParseOperatorPayouts(PayoutsCSV);
+            allSubs = TpayActivitedDateFill(allSubs);
+
+            var PayoutsCSV = System.IO.File.ReadAllLines(@"C:\temp\operator_payouts.csv");
+
+            var allPayouts = await ParseOperatorPayouts(PayoutsCSV);
 
             var AllCurrencyCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\currency.xls");
 
-            currencyList = await ParseCurrency(AllCurrencyCSV);
+            var currencyList = await ParseCurrency(AllCurrencyCSV);
 
+            //copy list
             var revenue = allSubs;
 
             //Unıque List
@@ -47,15 +48,14 @@ namespace Jawabsale_Generator
             foreach (var item in revenue)
             {
                 item.Parked = ParseParkedDays(item.created_date, item.tpay_activated_date);
-
             }
 
             //Unıque List
-            uniques = UniqueItems(revenue);
+            var uniques2 = UniqueItems(revenue);
 
             foreach (var item in revenue)
             {
-                if (item.operator_name==null)
+                if (string.IsNullOrEmpty(item.operator_name))
                 {
                     item.operator_name = "NoOperator";
                 }
@@ -63,6 +63,7 @@ namespace Jawabsale_Generator
 
             revenue = revenue.GroupBy(x => new
             {
+                x.domain,
                 x.created_date,
                 x.payment_gateway,
                 x.country_code,
@@ -72,6 +73,7 @@ namespace Jawabsale_Generator
                 x.Parked,
             }).Select(x => new SubscriptionRevenue
             {
+                domain = x.Key.domain,
                 created_date = x.Key.created_date,
                 payment_gateway = x.Key.payment_gateway,
                 country_code = x.Key.country_code,
@@ -79,16 +81,16 @@ namespace Jawabsale_Generator
                 currency_code = x.Key.currency_code,
                 operator_name = x.Key.operator_name,
                 Parked = x.Key.Parked,
-                //user_id = x.GroupBy(c => c.user_id).Where(grp => grp.Count() > 1).Select(grp => grp.Key).Sum(),
-                user_id = x.GroupBy(x => x.user_id).Count(),
+                //user_id = x.GroupBy(c => c.user_id).Where(grp => grp.Count() > 1).Select(grp => grp.Key).FirstOrDefault(),
+                user_id = x.GroupBy(x=>x.user_id).Count(),
                 currency_amount = x.Sum(x => x.currency_amount),
             }).ToList();
 
             //Unıque List
-            uniques = UniqueItems(revenue);
+            var uniques3 = UniqueItems(revenue);
 
-            lookupCurrency = currencyList.ToLookup(p => p.currency_code);
-            lookupPayouts = allPayouts.ToLookup(p => p.operator_name);
+            var lookupCurrency = currencyList.ToLookup(p => p.currency_code);
+            var lookupPayouts = allPayouts.ToLookup(p => p.operator_name);
 
             int e = 0;
             int p = 0;
@@ -104,6 +106,8 @@ namespace Jawabsale_Generator
                     try
                     {
                         sub.usd_amount = sub.currency_amount / (decimal)currency.quotes;
+                        sub.quotes = currency.quotes;
+                        sub.index = currency.index;
                         p++;
                     }
                     catch (Exception)
@@ -121,6 +125,7 @@ namespace Jawabsale_Generator
                 if (payout != null)
                 {
                     sub.net_usd_amount = sub.usd_amount * decimal.Parse(payout.payout_percentage.Replace("%", "")) / 100;
+                    sub.payout_percentage = (decimal.Parse(payout.payout_percentage.Replace("%", "")) / 100).ToString();
                 }
 
 
@@ -129,24 +134,11 @@ namespace Jawabsale_Generator
 
             }
 
-            uniques = UniqueItems(revenue);
+            //Unıque List
+            var uniques4 = UniqueItems(revenue);
 
 
-            await CsvWriter(revenue, "revenues_last");
-
-            revenue = revenue.GroupBy(x => new
-            {
-                x.created_date,
-                x.country_code,
-                x.operator_name,
-            }).Select(x => new SubscriptionRevenue
-            {
-                created_date = x.Key.created_date,
-                country_code = x.Key.country_code,
-                operator_name = x.Key.operator_name,
-                usd_amount = x.Sum(x => x.usd_amount),
-                net_usd_amount = x.Sum(x => x.net_usd_amount),
-            }).ToList();
+            //HAWIYYAH ALL
 
             List<RevenuesLast> revenuesLast = new List<RevenuesLast>();
 
@@ -154,37 +146,109 @@ namespace Jawabsale_Generator
             foreach (var item in revenue)
             {
                 RevenuesLast rev = new RevenuesLast();
-                rev.index = k;
+                rev.index_0 = k;
                 k++;
                 rev.created_date = item.created_date;
+                rev.payment_gateway = item.payment_gateway;
+                rev.country_code = item.country_code;
+                rev.utm_source_at_subscription = item.utm_source_at_subscription;
+                rev.currency_code = item.currency_code;
                 rev.country_code = item.country_code;
                 rev.operator_name = item.operator_name;
+                rev.Parked = item.Parked;
+                rev.user_id = item.user_id;
+                rev.currency_amount = item.currency_amount;
+                rev.index = item.index;
+                rev.quotes = item.quotes;
+                rev.payout_percentage = item.payout_percentage;
                 rev.usd_amount = item.usd_amount;
                 rev.net_usd_amount = item.net_usd_amount;
+                rev.UTM5 = item.UTM5;
                 revenuesLast.Add(rev);
             }
 
-            //Send Google Sheets to revenuesLast
+            await CsvWriter(revenuesLast, "revenues_last");
 
-            await CsvWriter(revenuesLast, "RevenuesLast");
+            //HAWIYYAH ONLY
 
+            List<RevenuesLast> revenuesLast_hawiyyahOnly = new List<RevenuesLast>();
+
+            int m = 0;
+            foreach (var item in revenue.Where(x => x.domain != "PEOPLEREVEAL"))
+            {
+                RevenuesLast rev = new RevenuesLast();
+                rev.index_0 = m;
+                m++;
+                rev.created_date = item.created_date;
+                rev.payment_gateway = item.payment_gateway;
+                rev.country_code = item.country_code;
+                rev.utm_source_at_subscription = item.utm_source_at_subscription;
+                rev.currency_code = item.currency_code;
+                rev.country_code = item.country_code;
+                rev.operator_name = item.operator_name;
+                rev.Parked = item.Parked;
+                rev.user_id = item.user_id;
+                rev.currency_amount = item.currency_amount;
+                rev.index = item.index;
+                rev.quotes = item.quotes;
+                rev.payout_percentage = item.payout_percentage;
+                rev.usd_amount = item.usd_amount;
+                rev.net_usd_amount = item.net_usd_amount;
+                rev.UTM5 = item.UTM5;
+                revenuesLast_hawiyyahOnly.Add(rev);
+            }
+
+            await CsvWriter(revenuesLast_hawiyyahOnly, "revenuesLast_hawiyyahOnly");
+
+            //PEOPLEREVEAL
+            List<RevenuesLast> revenuesLast_peopleReveal = new List<RevenuesLast>();
+
+            foreach (var item in revenue.Where(x => x.domain == "PEOPLEREVEAL"))
+            {
+                RevenuesLast rev = new RevenuesLast();
+                rev.index_0 = m;
+                m++;
+                rev.created_date = item.created_date;
+                rev.payment_gateway = item.payment_gateway;
+                rev.country_code = item.country_code;
+                rev.utm_source_at_subscription = item.utm_source_at_subscription;
+                rev.currency_code = item.currency_code;
+                rev.country_code = item.country_code;
+                rev.operator_name = item.operator_name;
+                rev.Parked = item.Parked;
+                rev.user_id = item.user_id;
+                rev.currency_amount = item.currency_amount;
+                rev.index = item.index;
+                rev.quotes = item.quotes;
+                rev.payout_percentage = item.payout_percentage;
+                rev.usd_amount = item.usd_amount;
+                rev.net_usd_amount = item.net_usd_amount;
+                rev.UTM5 = item.UTM5;
+                revenuesLast_peopleReveal.Add(rev);
+            }
+
+            await CsvWriter (revenuesLast_peopleReveal, "revenuesLast_peopleReveal");
 
         }
 
         public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>>> NewLTVSameMonth()
         {
 
-            var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Jawabsale\Base\SALE-subs-55419400.csv");
+            var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Hawiyyah\Base\HAWIYYAH-subs-2304771.csv");
 
-            allSubs = await ParseSubscriptions(AllSubsCSV);
+            var allSubs = await ParseSubscriptions(AllSubsCSV);
 
-            var PayoutsCSV = System.IO.File.ReadAllLines(@"C:\temp\Jawabsale\Base\OperatorPayouts-Jawabsale.csv");
+            var PayoutsCSV = System.IO.File.ReadAllLines(@"C:\temp\operator_payouts.csv");
 
-            allPayouts = await ParseOperatorPayouts(PayoutsCSV);
+            var allPayouts = await ParseOperatorPayouts(PayoutsCSV);
 
             var AllCurrencyCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\currency.xls");
 
-            currencyList = await ParseCurrency(AllCurrencyCSV);
+            var currencyList = await ParseCurrency(AllCurrencyCSV);
+
+            allSubs = DomainParser(allSubs);
+
+            allSubs = TpayActivitedDateFill(allSubs);
 
             var userSpendingList = allSubs.GroupBy(x => new
             {
@@ -225,6 +289,7 @@ namespace Jawabsale_Generator
 
             var dateCounts = counts.GroupBy(x => new
             {
+                x.domain,
                 x.created_date,
                 x.country_code,
                 x.utm_source_at_subscription,
@@ -235,6 +300,7 @@ namespace Jawabsale_Generator
                 x.tpay_activated_date,
             }).Select(x => new SubscriptionRevenue
             {
+                domain = x.Key.domain,
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
                 utm_source_at_subscription = x.Key.utm_source_at_subscription,
@@ -255,12 +321,13 @@ namespace Jawabsale_Generator
                 }
                 else
                 {
-                    item.lang = "ar" ;
+                    item.lang = "ar";
                 }
             }
 
             var dateCountsx = dateCounts.GroupBy(x => new
             {
+                x.domain,
                 x.created_date,
                 x.country_code,
                 x.utm_source_at_subscription,
@@ -272,6 +339,7 @@ namespace Jawabsale_Generator
                 x.tpay_activated_date,
             }).Select(x => new SubscriptionRevenue
             {
+                domain = x.Key.domain,
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
                 utm_source_at_subscription = x.Key.utm_source_at_subscription,
@@ -290,8 +358,8 @@ namespace Jawabsale_Generator
             int i = 0;
             int z = 0;
 
-            lookupCurrency = currencyList.ToLookup(p => p.currency_code);
-            lookupPayouts = allPayouts.ToLookup(p => p.operator_name);
+            var lookupCurrency = currencyList.ToLookup(p => p.currency_code);
+            var lookupPayouts = allPayouts.ToLookup(p => p.operator_name);
 
             foreach (var item in dateCountsNewLtv)
             {
@@ -331,6 +399,7 @@ namespace Jawabsale_Generator
 
             var dateCountsNewLtv_ = dateCountsNewLtv.GroupBy(x => new
             {
+                x.domain,
                 x.created_date,
                 x.country_code,
                 x.utm_source_at_subscription,
@@ -339,11 +408,12 @@ namespace Jawabsale_Generator
                 x.period_type,
             }).Select(x => new NewLTVSameMonth
             {
+                domain = x.Key.domain,
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
                 utm_source_at_subscription = x.Key.utm_source_at_subscription,
                 operator_name = x.Key.operator_name,
-                Parked = x.Key.Parked,
+                Parked = ParseParkedDaysToString(x.Key.Parked),
                 period_type = x.Key.period_type,
                 user_id = x.Count(),
                 usd_amount = x.Sum(x => x.usd_amount),
@@ -371,13 +441,13 @@ namespace Jawabsale_Generator
         public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>>> FirstSubReport(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
         {
 
-            var PayoutsCSV = System.IO.File.ReadAllLines(@"C:\temp\Jawabsale\Base\OperatorPayouts-Jawabsale.csv");
+            var PayoutsCSV = System.IO.File.ReadAllLines(@"C:\temp\operator_payouts.csv");
 
-            allPayouts = await ParseOperatorPayouts(PayoutsCSV);
+            var allPayouts = await ParseOperatorPayouts(PayoutsCSV);
 
             var AllCurrencyCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\currency.xls");
 
-            currencyList = await ParseCurrency(AllCurrencyCSV);
+            var currencyList = await ParseCurrency(AllCurrencyCSV);
 
             var dateCountsNewLtv = lists.Item1;
 
@@ -431,6 +501,7 @@ namespace Jawabsale_Generator
 
             dateCountsx2 = dateCountsx2.GroupBy(x => new
             {
+                x.domain,
                 x.created_date,
                 x.country_code,
                 x.utm_source_at_subscription,
@@ -440,6 +511,7 @@ namespace Jawabsale_Generator
                 x.Category,
             }).Select(x => new SubscriptionRevenue
             {
+                domain = x.Key.domain,
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
                 utm_source_at_subscription = x.Key.utm_source_at_subscription,
@@ -451,6 +523,9 @@ namespace Jawabsale_Generator
                 usd_amount = x.Sum(x => x.usd_amount),
                 net_usd_amount = x.Sum(x => x.net_usd_amount),
             }).ToList();
+
+
+            //HAWIYYAH ALL
 
             List<FirstSubReport> firstSubReportList = new List<FirstSubReport>();
 
@@ -464,19 +539,75 @@ namespace Jawabsale_Generator
                 firstSubReport.country_code = item.country_code;
                 firstSubReport.utm_source_at_subscription = item.utm_source_at_subscription;
                 firstSubReport.operator_name = item.operator_name;
-                firstSubReport.Parked = item.Parked;
+                firstSubReport.Parked = ParseParkedDaysToString(item.Parked);
                 firstSubReport.period_type = item.period_type;
                 firstSubReport.Category = item.Category;
                 firstSubReport.user_id = item.user_id;
                 firstSubReport.usd_amount = item.usd_amount;
                 firstSubReport.net_usd_amount = item.net_usd_amount;
+                firstSubReport.domain = item.domain;
                 firstSubReportList.Add(firstSubReport);
 
 
             }
 
-
             await CsvWriter(firstSubReportList, "first_sub_report");
+
+            //HAWIYYAH ONLY
+
+            List<FirstSubReport> firstSubReportList_Hawiyyah = new List<FirstSubReport>();
+
+            int n = 0;
+            foreach (var item in dateCountsx2.Where(x => x.domain != "PEOPLEREVEAL"))
+            {
+                FirstSubReport firstSubReport = new FirstSubReport();
+                firstSubReport.index = n;
+                n++;
+                firstSubReport.created_date = item.created_date;
+                firstSubReport.country_code = item.country_code;
+                firstSubReport.utm_source_at_subscription = item.utm_source_at_subscription;
+                firstSubReport.operator_name = item.operator_name;
+                firstSubReport.Parked = ParseParkedDaysToString(item.Parked);
+                firstSubReport.period_type = item.period_type;
+                firstSubReport.Category = item.Category;
+                firstSubReport.user_id = item.user_id;
+                firstSubReport.usd_amount = item.usd_amount;
+                firstSubReport.net_usd_amount = item.net_usd_amount;
+                firstSubReport.domain = item.domain;
+                firstSubReportList_Hawiyyah.Add(firstSubReport);
+
+
+            }
+
+            await CsvWriter(firstSubReportList_Hawiyyah, "first_sub_report_hawiyyah");
+
+            //PEOPLEREVEAL
+
+            List<FirstSubReport> firstSubReportList_PeopleReveal = new List<FirstSubReport>();
+
+            foreach (var item in dateCountsx2.Where(x => x.domain == "PEOPLEREVEAL"))
+            {
+                FirstSubReport firstSubReport = new FirstSubReport();
+                firstSubReport.index = n;
+                n++;
+                firstSubReport.created_date = item.created_date;
+                firstSubReport.country_code = item.country_code;
+                firstSubReport.utm_source_at_subscription = item.utm_source_at_subscription;
+                firstSubReport.operator_name = item.operator_name;
+                firstSubReport.Parked = ParseParkedDaysToString(item.Parked);
+                firstSubReport.period_type = item.period_type;
+                firstSubReport.Category = item.Category;
+                firstSubReport.user_id = item.user_id;
+                firstSubReport.usd_amount = item.usd_amount;
+                firstSubReport.net_usd_amount = item.net_usd_amount;
+                firstSubReport.domain = item.domain;
+                firstSubReportList_PeopleReveal.Add(firstSubReport);
+
+
+            }
+
+            await CsvWriter(firstSubReportList_PeopleReveal, "first_sub_report_peopleReveal");
+
 
             return Tuple.Create(dateCountsNewLtv, dateCountsx2);
 
@@ -484,78 +615,44 @@ namespace Jawabsale_Generator
         }
 
 
-        public static async Task LTVModels(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists2)
+
+
+
+
+
+
+
+
+
+
+
+
+        private static bool ParseParkedDays(string date1, string date2)
         {
-
-            List<LTVModels> lTVModels = new List<LTVModels>();
-
-            var dateCountsNewLtv = lists2.Item1;
-
-            var dateCountsx2 = lists2.Item2;
-
-            foreach (var item in dateCountsx2)
-            {
-                item.model = "OLDMODEL";
-            }
-
-            int m = 0;
-            int o = 0;
-            int s = 0;
-            foreach (var item in dateCountsx2)
-            {
-                LTVModels oldModel = new LTVModels();
-                oldModel.main_index = m;
-                m++;
-                oldModel.index = o;
-                o++;
-                oldModel.created_date = item.created_date;
-                oldModel.country_code = item.country_code;
-                oldModel.utm_source_at_subscription = item.utm_source_at_subscription;
-                oldModel.operator_name = item.operator_name;
-                oldModel.Parked = item.Parked;
-                oldModel.period_type = item.period_type;
-                oldModel.user_id = item.user_id;
-                oldModel.usd_amount = item.usd_amount;
-                oldModel.net_usd_amount = item.net_usd_amount;
-                oldModel.Category = item.Category;
-                oldModel.model = item.model;
-                lTVModels.Add(oldModel);
-
-            }
-
-            foreach (var item in dateCountsNewLtv)
-            {
-                LTVModels samemonth = new LTVModels();
-                samemonth.main_index = m;
-                m++;
-                samemonth.index = s;
-                s++;
-                samemonth.created_date = item.created_date;
-                samemonth.country_code = item.country_code;
-                samemonth.utm_source_at_subscription = item.utm_source_at_subscription;
-                samemonth.operator_name = item.operator_name;
-                samemonth.Parked = item.Parked;
-                samemonth.period_type = item.period_type;
-                samemonth.user_id = item.user_id;
-                samemonth.usd_amount = item.usd_amount;
-                samemonth.net_usd_amount = item.net_usd_amount;
-                samemonth.Category = item.Category;
-                samemonth.model = item.model;
-                lTVModels.Add(samemonth);
-
-            }
-
-            await CsvWriter(lTVModels, "LTV_Models");
-
-
-        }
-
-        private static string ParseParkedDays(string date1, string date2)
-        {
-
             try
             {
                 if (date1 == date2)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+
+                return false;
+            }
+
+        }
+
+        private static string ParseParkedDaysToString(bool date)
+        {
+            try
+            {
+                if (date==false)
                 {
                     return "0";
                 }
@@ -570,41 +667,125 @@ namespace Jawabsale_Generator
                 return "0";
             }
 
+        }
 
-            //if (build == false)
+        public static async Task CsvWriter<T>(List<T> list, string fileName)
+        {
+            //string path = "C:/Users/savas/Desktop/list.csv";
+
+            //using (var writer = new StreamWriter(path))
+            //using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
             //{
-            //    try
-            //    {
-            //        if (date1 == date2)
-            //        {
-            //            return "Parked";
-            //        }
-            //        else
-            //        {
-            //            return "Not Parked";
-            //        }
-            //    }
-            //    catch (Exception)
-            //    {
-
-            //        return "Parked";
-            //    }
+            //    csv.WriteRecords(list);
             //}
+            string filePath = fileName + ".csv";
+            var exportPath = Path.Combine(@"C:\temp\Hawiyyah\OutData\", filePath);
+            using (TextWriter writer = new StreamWriter(exportPath, false, System.Text.Encoding.UTF8))
+            {
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                    csv.WriteRecords(list); // where values implements IEnumerable
+            }
+        }
 
+        private static async Task<List<Currency>> CurrencyExport()
+        {
+            HttpClient httpClient = new HttpClient();
+
+            string currencyLink = "http://www.apilayer.net/api/live?access_key=744f84b0a99557d519fb07a7c4b9b3fa&format=1";
+
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(currencyLink));
+
+            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+
+            var data = await response.Content.ReadAsStringAsync();
+
+            var currency = JsonConvert.DeserializeObject<CurrencyJson>(data);
+
+            List<Currency> currencies = new List<Currency>();
+
+            if (currency.success)
+            {
+                currency.quotes["USDLYD"] = 5;
+                //currency.quotes["USDILS"] = 3.84;
+                //currency.quotes["USDTND"] = 2.85;
+                //currency.quotes["USDEGP"] = 16;
+                //currency.quotes["USDQAR"] = 3.72;
+
+                foreach (var keyValuePair in currency.quotes)
+                {
+                    Currency currencyItem = new Currency()
+                    {
+                        index = keyValuePair.Key,
+                        quotes = keyValuePair.Value,
+                        currency_code = TruncateLongString(keyValuePair.Key, 3, 3)
+                    };
+
+                    currencies.Add(currencyItem);
+                }
+
+                //await this.repository.InsertMany(currencies, "Currency", true);
+                //string csv = ToCsv<Currency>(",", currencies);
+                //System.IO.File.WriteAllText(@"c:\reports\currency.csv", csv);
+                return currencies;
+
+            }
+            else
+            {
+                //throw new BusinessException("currency fetch error", "10988");
+                throw new Exception("currency fetch error");
+
+            }
 
         }
 
-        public static List<string> UniqueItems(IEnumerable<SubscriptionRevenue> list)
+        private static async Task<List<Currency>> ParseCurrency(string[] currency)
         {
-            List<string> uniques = new List<string>();
 
+            CsvFactory.Register<Currency>(builder =>
+            {
+
+                builder.Add(a => a.index).Type(typeof(string)).ColumnName("index");
+                builder.Add(a => a.quotes).Type(typeof(double)).ColumnName("quotes");
+                builder.Add(a => a.currency_code).Type(typeof(string)).ColumnName("currency_code");
+
+
+            }, true, ',', currency);
+
+            List<Currency> currencies = await CsvFactory.Parse<Currency>();
+
+            return currencies;
+
+        }
+
+        public static List<SubscriptionRevenue> DomainParser(List<SubscriptionRevenue> list)
+        {
             foreach (var item in list)
             {
-                if (!uniques.Contains(item.payment_gateway)) uniques.Add(item.payment_gateway);
+                if (item.domain_pattern.ToLower().Contains("peoplereveal"))
+                {
+                    item.domain = "PEOPLEREVEAL";
+                }
+                else
+                {
+                    item.domain = "HAWIYYAH";
+                }
             }
-            return uniques;
+
+            return list;
         }
 
+        public static List<SubscriptionRevenue> TpayActivitedDateFill(List<SubscriptionRevenue> list)
+        {
+            foreach (var item in list)
+            {
+                if (string.IsNullOrEmpty(item.tpay_activated_date))
+                {
+                    item.tpay_activated_date = item.created_date;
+                }
+            }
+
+            return list;
+        }
         public static async Task<List<SubscriptionRevenue>> ParseSubscriptions(string[] subscriptions)
         {
 
@@ -637,6 +818,7 @@ namespace Jawabsale_Generator
                 builder.Add(a => a.unsubscribed_by).Type(typeof(string)).ColumnName("unsubscribed_by");
                 builder.Add(a => a.first_subscription_subject_id).Type(typeof(int)).ColumnName("first_subscription_subject_id");
                 builder.Add(a => a.utm_source_first).Type(typeof(string)).ColumnName("utm_source_first");
+                builder.Add(a => a.domain_pattern).Type(typeof(string)).ColumnName("domain_pattern");
                 builder.Add(a => a.utm_source_last).Type(typeof(string)).ColumnName("utm_source_last");
                 builder.Add(a => a.utm_medium_first).Type(typeof(string)).ColumnName("utm_medium_first");
                 builder.Add(a => a.utm_medium_last).Type(typeof(string)).ColumnName("utm_medium_last");
@@ -673,23 +855,15 @@ namespace Jawabsale_Generator
 
         }
 
-        private static async Task<List<Currency>> ParseCurrency(string[] currency)
+        public static List<string> UniqueItems(IEnumerable<SubscriptionRevenue> list)
         {
+            List<string> uniques = new List<string>();
 
-            CsvFactory.Register<Currency>(builder =>
+            foreach (var item in list)
             {
-
-                builder.Add(a => a.index).Type(typeof(string)).ColumnName("index");
-                builder.Add(a => a.quotes).Type(typeof(double)).ColumnName("quotes");
-                builder.Add(a => a.currency_code).Type(typeof(string)).ColumnName("currency_code");
-
-
-            }, true, ',', currency);
-
-            List<Currency> currencies = await CsvFactory.Parse<Currency>();
-
-            return currencies;
-
+                if (!uniques.Contains(item.payment_gateway)) uniques.Add(item.payment_gateway);
+            }
+            return uniques;
         }
 
         public static string TruncateLongString(string str, int minLenght, int maxLength)
@@ -699,22 +873,5 @@ namespace Jawabsale_Generator
             return str.Substring(minLenght, Math.Min(str.Length, maxLength));
         }
 
-        public static async Task CsvWriter<T>(IEnumerable<T> list, string fileName)
-        {
-            //string path = "C:/Users/savas/Desktop/list.csv";
-
-            //using (var writer = new StreamWriter(path))
-            //using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-            //{
-            //    csv.WriteRecords(list);
-            //}
-            string filePath = fileName + ".csv";
-            var exportPath = Path.Combine(@"C:\temp\Jawabsale\OutData\", filePath);
-            using (TextWriter writer = new StreamWriter(exportPath, false, System.Text.Encoding.UTF8))
-            {
-                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-                    csv.WriteRecords(list); // where values implements IEnumerable
-            }
-        }
     }
 }

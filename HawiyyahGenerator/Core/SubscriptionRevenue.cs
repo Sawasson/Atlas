@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jawabsale_Generator.Core
+namespace HawiyyahGenerator.Core
 {
     public class SubscriptionRevenue
     {
@@ -35,6 +35,7 @@ namespace Jawabsale_Generator.Core
         public string unsubscribed_by { get; set; }
         public int first_subscription_subject_id { get; set; }
         public string utm_source_first { get; set; }
+        public string domain_pattern { get; set; }
         public string utm_source_last { get; set; }
         public string utm_medium_first { get; set; }
         public string utm_medium_last { get; set; }
@@ -45,7 +46,7 @@ namespace Jawabsale_Generator.Core
         public string subscription_log_type { get; set; }
         public int tpay_operator_detail_id { get; set; }
 
-        public string Parked { get; set; }
+        public bool Parked { get; set; }
         public decimal usd_amount { get; set; }
         public decimal net_usd_amount { get; set; }
         public string UTM5 { get; set; }
@@ -53,14 +54,10 @@ namespace Jawabsale_Generator.Core
         public string source { get; set; }
         public string Category { get; set; }
         public string model { get; set; }
-
-
-
-
-
-
-
-
+        public string domain { get; set; }
+        public string index { get; set; }
+        public double quotes { get; set; }
+        public string payout_percentage { get; set; }
 
     }
 }

@@ -9,6 +9,11 @@ namespace Jawabsale_Generator
         {
 
             await Jawabsale.RevenuesLast();
+            var lists = await Jawabsale.NewLTVSameMonth();
+            var lists2 = await Jawabsale.FirstSubReport(lists);
+            await Jawabsale.LTVModels(lists2);
+
+
         }
     }
 }

@@ -76,7 +76,7 @@ namespace Jawabkom_Generator3.Core
         {
             switch (category)
             {
-                case "apps":
+                case "Apps":
                     return "Yes";
                 default:
                     return "No";

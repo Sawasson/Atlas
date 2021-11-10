@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Jawabsale_Generator
+namespace JawabTawzeef
 {
     public class Checkers
     {
@@ -44,8 +44,6 @@ namespace Jawabsale_Generator
                     return "Twitter";
                 case "speak":
                     return "Speakol";
-                case "tikt":
-                    return "Tiktok";
                 default:
                     return "None";
             }
@@ -55,7 +53,6 @@ namespace Jawabsale_Generator
         {
             switch (utm_source.Substring(0, Math.Min(utm_source.Length, 7)).ToLower())
             {
-                case "-lab":
                 case "googled":
                 case "gdbetis":
                 case "gdn_1pa":

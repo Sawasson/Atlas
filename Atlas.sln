@@ -9,7 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jawabkom-Generator3", "Jawa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IF.Csv", "IF.Csv\IF.Csv.csproj", "{17BB6C58-158B-4A42-AE4D-9390F26C7A3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jawabsale-Generator", "Jawabsale-Generator\Jawabsale-Generator.csproj", "{68746175-EC26-4AA8-85D0-C0E3D99F579C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jawabsale-Generator", "Jawabsale-Generator\Jawabsale-Generator.csproj", "{68746175-EC26-4AA8-85D0-C0E3D99F579C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HawiyyahGenerator", "HawiyyahGenerator\HawiyyahGenerator.csproj", "{776EF57A-3D1D-490B-BA4B-3F981E200074}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JawabTawzeef", "JawabTawzeef\JawabTawzeef.csproj", "{82A49471-F6B1-40DA-AAD7-89A2EDACB303}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JawabMehan", "JawabMehan\JawabMehan.csproj", "{7E7083C0-97CB-4BC3-829A-D0F0EDCC76C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +39,18 @@ Global
 		{68746175-EC26-4AA8-85D0-C0E3D99F579C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68746175-EC26-4AA8-85D0-C0E3D99F579C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68746175-EC26-4AA8-85D0-C0E3D99F579C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{776EF57A-3D1D-490B-BA4B-3F981E200074}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{776EF57A-3D1D-490B-BA4B-3F981E200074}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{776EF57A-3D1D-490B-BA4B-3F981E200074}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{776EF57A-3D1D-490B-BA4B-3F981E200074}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82A49471-F6B1-40DA-AAD7-89A2EDACB303}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82A49471-F6B1-40DA-AAD7-89A2EDACB303}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82A49471-F6B1-40DA-AAD7-89A2EDACB303}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82A49471-F6B1-40DA-AAD7-89A2EDACB303}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E7083C0-97CB-4BC3-829A-D0F0EDCC76C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E7083C0-97CB-4BC3-829A-D0F0EDCC76C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E7083C0-97CB-4BC3-829A-D0F0EDCC76C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E7083C0-97CB-4BC3-829A-D0F0EDCC76C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
