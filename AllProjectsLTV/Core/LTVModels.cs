@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HawiyyahGenerator.Core
+namespace AllProjectsLTV.Core
 {
     public class LTVModels
     {
@@ -15,12 +15,14 @@ namespace HawiyyahGenerator.Core
         public string utm_source_at_subscription { get; set; }
         public string currency_code { get; set; }
         public string operator_name { get; set; }
-        public bool Parked { get; set; }
+        public string Parked { get; set; }
         public string period_type { get; set; }
         public int user_id { get; set; }
         public decimal usd_amount { get; set; }
         public decimal net_usd_amount { get; set; }
         public string Category { get; set; }
         public string model { get; set; }
+        public string project { get; set; }
+
     }
 }

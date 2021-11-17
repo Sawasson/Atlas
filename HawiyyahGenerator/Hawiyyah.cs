@@ -437,6 +437,77 @@ namespace HawiyyahGenerator
             return Tuple.Create(dateCountsNewLtv, dateCountsx);
         }
 
+        public static async Task<List<LTVModels>> LTVModels(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
+        {
+            List<LTVModels> lTVModels = new List<LTVModels>();
+
+            var dateCountsNewLtv = lists.Item1;
+
+            var dateCountsx2 = lists.Item2;
+
+            //foreach (var item in dateCountsNewLtv)
+            //{
+            //    item.model = "SAMEMONTH";
+            //}
+
+            //foreach (var item in dateCountsx2)
+            //{
+            //    item.model = "OLDMODEL";
+            //}
+
+            int m = 0;
+            int o = 0;
+            int s = 0;
+
+            foreach (var item in dateCountsx2)
+            {
+                LTVModels oldModel = new LTVModels();
+                oldModel.main_index = m;
+                m++;
+                oldModel.index = o;
+                o++;
+                oldModel.created_date = item.created_date;
+                oldModel.country_code = item.country_code;
+                oldModel.utm_source_at_subscription = item.utm_source_at_subscription;
+                oldModel.operator_name = item.operator_name;
+                oldModel.Parked = item.Parked;
+                oldModel.period_type = item.period_type;
+                oldModel.user_id = item.user_id;
+                oldModel.usd_amount = item.usd_amount;
+                oldModel.net_usd_amount = item.net_usd_amount;
+                oldModel.Category = item.Category;
+                oldModel.model = "OLDMODEL";
+                lTVModels.Add(oldModel);
+
+            }
+
+            foreach (var item in dateCountsNewLtv)
+            {
+                LTVModels samemonth = new LTVModels();
+                samemonth.main_index = m;
+                m++;
+                samemonth.index = s;
+                s++;
+                samemonth.created_date = item.created_date;
+                samemonth.country_code = item.country_code;
+                samemonth.utm_source_at_subscription = item.utm_source_at_subscription;
+                samemonth.operator_name = item.operator_name;
+                samemonth.Parked = item.Parked;
+                samemonth.period_type = item.period_type;
+                samemonth.user_id = item.user_id;
+                samemonth.usd_amount = item.usd_amount;
+                samemonth.net_usd_amount = item.net_usd_amount;
+                samemonth.Category = item.Category;
+                samemonth.model = "SAMEMONTH";
+                lTVModels.Add(samemonth);
+
+            }
+
+            await CsvWriter(lTVModels, "LTV_Models");
+
+            return lTVModels;
+
+        }
 
         public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>>> FirstSubReport(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
         {

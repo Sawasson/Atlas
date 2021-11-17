@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HawiyyahGenerator\HawiyyahGenerator.csproj" />
+    <ProjectReference Include="..\Jawabkom-Generator3\Jawabkom-Generator3.csproj" />
+    <ProjectReference Include="..\Jawabsale-Generator\Jawabsale-Generator.csproj" />
+  </ItemGroup>
+
+</Project>

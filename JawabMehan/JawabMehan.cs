@@ -239,13 +239,6 @@ namespace JawabMehan
                 currency_amount = x.Sum(x => x.currency_amount),
             }).ToList();
 
-            //foreach (var item in dateCounts)
-            //{
-
-            //    item.created_datex = DateTime.ParseExact(item.created_date, "yyyy-MM-dd",
-            //                                           System.Globalization.CultureInfo.InvariantCulture);
-            //}
-
             var dateCountsx = dateCounts.GroupBy(x => new
             {
                 x.created_date,

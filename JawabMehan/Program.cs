@@ -12,7 +12,7 @@ namespace JawabMehan
             var list2 = await JawabMehan.New_LTV_SAMEMONTH();
             await JawabMehan.RawFinalReportMonthly(list2);
             await JawabMehan.RawDailyCost();
-            await JawabMehan.RawMonthlyClicks();
+            //await JawabMehan.RawMonthlyClicks();
 
         }
     }

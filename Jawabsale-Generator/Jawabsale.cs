@@ -486,7 +486,7 @@ namespace Jawabsale_Generator
         }
 
 
-        public static async Task LTVModels(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists2)
+        public static async Task<List<LTVModels>> LTVModels(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists2)
         {
 
             List<LTVModels> lTVModels = new List<LTVModels>();
@@ -495,10 +495,10 @@ namespace Jawabsale_Generator
 
             var dateCountsx2 = lists2.Item2;
 
-            foreach (var item in dateCountsx2)
-            {
-                item.model = "OLDMODEL";
-            }
+            //foreach (var item in dateCountsx2)
+            //{
+            //    item.model = "OLDMODEL";
+            //}
 
             int m = 0;
             int o = 0;
@@ -520,7 +520,7 @@ namespace Jawabsale_Generator
                 oldModel.usd_amount = item.usd_amount;
                 oldModel.net_usd_amount = item.net_usd_amount;
                 oldModel.Category = item.Category;
-                oldModel.model = item.model;
+                oldModel.model = "OLDMODEL";
                 lTVModels.Add(oldModel);
 
             }
@@ -542,13 +542,14 @@ namespace Jawabsale_Generator
                 samemonth.usd_amount = item.usd_amount;
                 samemonth.net_usd_amount = item.net_usd_amount;
                 samemonth.Category = item.Category;
-                samemonth.model = item.model;
+                samemonth.model = "SAMEMONTH";
                 lTVModels.Add(samemonth);
 
             }
 
             await CsvWriter(lTVModels, "LTV_Models");
 
+            return lTVModels;
 
         }
 
@@ -612,7 +613,7 @@ namespace Jawabsale_Generator
 
             CsvFactory.Register<SubscriptionRevenue>(builder =>
             {
-                builder.Add(a => a.Id).Type(typeof(object)).ColumnName("Id");
+                builder.Add(a => a.Id).Type(typeof(object)).ColumnName("id");
                 builder.Add(a => a.user_id).Type(typeof(int)).ColumnName("user_id");
                 builder.Add(a => a.subscription_id).Type(typeof(int)).ColumnName("subscription_id");
                 builder.Add(a => a.next_subscription_id).Type(typeof(int)).ColumnName("next_subscription_id");
