@@ -138,11 +138,14 @@ namespace LTVGrowth
 
                 item.tpay_activated_date = DatetimeMonthlyParse(item.tpay_activated_date);
 
-                item.created_date = DatetimeMonthlyParse(item.created_date);
+                item.first_sub_date = DatetimeMonthlyParse(item.first_sub_date);
 
             }
 
-            dataf = dataf.Where(x => x.tpay_activated_date == x.created_date).ToList();
+            /////////////////for same_month//////////////////////////////////////////////
+            var orj_dataf = dataf;
+
+            dataf = dataf.Where(x => x.tpay_activated_date == x.first_sub_date).ToList();
 
 
             dataf = dataf.GroupBy(x => new
@@ -187,7 +190,7 @@ namespace LTVGrowth
             {
 
                 var UserSpending = lookupUserSpendingList[data.user_id].FirstOrDefault();
-                data.currency_amount = UserSpending.currency_amount;
+                data.total_spending = UserSpending.total_spending;
             }
 
             dataf = dataf.GroupBy(x => new
@@ -249,10 +252,155 @@ namespace LTVGrowth
 
             await CsvWriter(dataf, "LTV_Growth_Raw_Same_month_sheet");
 
+            var dfx_samemonth = dataf;
+
+            /////////////////for old_model//////////////////////////////////////////////
+            dataf = orj_dataf;
+
+            dataf = dataf.Where(x => x.tpay_activated_date == x.first_sub_date).ToList();
 
 
+            dataf = dataf.GroupBy(x => new
+            {
+                x.user_id,
+                x.first_sub_date,
+                x.country_code,
+                x.operator_name,
+                x.currency_code,
+                x.period_type,
+            }).Select(x => new SubscriptionRevenue
+            {
+                user_id = x.Key.user_id,
+                first_sub_date = x.Key.first_sub_date,
+                country_code = x.Key.country_code,
+                operator_name = x.Key.operator_name,
+                currency_code = x.Key.currency_code,
+                period_type = x.Key.period_type,
+                Days7 = x.Sum(x => x.Days7),
+                Days14 = x.Sum(x => x.Days14),
+                Days30 = x.Sum(x => x.Days30),
+                Days60 = x.Sum(x => x.Days60),
+                Days90 = x.Sum(x => x.Days90),
+                Days120 = x.Sum(x => x.Days120),
+                Days150 = x.Sum(x => x.Days150),
+                Days180 = x.Sum(x => x.Days180),
+                Days210 = x.Sum(x => x.Days210),
+                Days240 = x.Sum(x => x.Days240),
+                Days270 = x.Sum(x => x.Days270),
+                Days300 = x.Sum(x => x.Days300),
+                Days330 = x.Sum(x => x.Days330),
+                Days360 = x.Sum(x => x.Days360),
+            }).ToList();
 
 
+            lookupUserSpendingList = userSpendingList.ToLookup(p => p.user_id);
+
+
+            foreach (var data in dataf)
+            {
+
+                var UserSpending = lookupUserSpendingList[data.user_id].FirstOrDefault();
+                data.total_spending = UserSpending.total_spending;
+            }
+
+            dataf = dataf.GroupBy(x => new
+            {
+                x.first_sub_date,
+                x.country_code,
+                x.operator_name,
+                x.currency_code,
+                x.period_type,
+            }).Select(x => new SubscriptionRevenue
+            {
+                first_sub_date = x.Key.first_sub_date,
+                country_code = x.Key.country_code,
+                operator_name = x.Key.operator_name,
+                currency_code = x.Key.currency_code,
+                period_type = x.Key.period_type,
+                user_id = x.Count(),
+                Days7 = x.Sum(x => x.Days7),
+                Days14 = x.Sum(x => x.Days14),
+                Days30 = x.Sum(x => x.Days30),
+                Days60 = x.Sum(x => x.Days60),
+                Days90 = x.Sum(x => x.Days90),
+                Days120 = x.Sum(x => x.Days120),
+                Days150 = x.Sum(x => x.Days150),
+                Days180 = x.Sum(x => x.Days180),
+                Days210 = x.Sum(x => x.Days210),
+                Days240 = x.Sum(x => x.Days240),
+                Days270 = x.Sum(x => x.Days270),
+                Days300 = x.Sum(x => x.Days300),
+                Days330 = x.Sum(x => x.Days330),
+                Days360 = x.Sum(x => x.Days360),
+                total_spending = x.Sum(x => x.total_spending),
+            }).ToList();
+
+
+            foreach (var item in dataf)
+            {
+
+                item.Days7 = item.Days7 / item.user_id;
+                item.Days14 = item.Days14 / item.user_id;
+                item.Days30 = item.Days30 / item.user_id;
+                item.Days60 = item.Days60 / item.user_id;
+                item.Days90 = item.Days90 / item.user_id;
+                item.Days120 = item.Days120 / item.user_id;
+                item.Days150 = item.Days150 / item.user_id;
+                item.Days180 = item.Days180 / item.user_id;
+                item.Days210 = item.Days210 / item.user_id;
+                item.Days240 = item.Days240 / item.user_id;
+                item.Days270 = item.Days270 / item.user_id;
+                item.Days300 = item.Days300 / item.user_id;
+                item.Days330 = item.Days330 / item.user_id;
+                item.Days360 = item.Days360 / item.user_id;
+                item.spending_360 = item.Days360 * item.user_id;
+
+            }
+
+
+            await CsvWriter(dataf, "LTV_Growth_Raw_Sheet");
+
+
+            var categoryList = await GetCategories();
+
+            var lookupCategories = categoryList.ToLookup(p => p.CategoryID);
+
+            foreach (var item in dfx_samemonth)
+            {
+                try
+                {
+                    var category = lookupCategories[Int32.Parse(item.first_subscription_subject_id)].FirstOrDefault();
+
+                    if (category != null)
+                    {
+                        try
+                        {
+                            item.CategoryID = category.CategoryID;
+                            item.CategoryName = category.CategoryName;
+                            z++;
+                        }
+                        catch (Exception ex)
+                        {
+                            i++;
+                            if (i >= dfx_samemonth.Count * 0.01)
+                            {
+                                throw ex;
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
+
+
+            }
+
+            foreach (var item in dfx_samemonth)
+            {
+                item.operator_country = item.operator_name.Substring(0, 2).ToUpper();
+            }
 
 
 
@@ -261,6 +409,33 @@ namespace LTVGrowth
 
 
         }
+
+        private static async Task<List<Categories>> GetCategories()
+        {
+            var CsvCategories = await System.IO.File.ReadAllLinesAsync(@"C:\temp\categories.csv");
+
+            var categories = await ParseCategories(CsvCategories);
+
+            return categories;
+        }
+
+        private static async Task<List<Categories>> ParseCategories(string[] categories)
+        {
+
+            CsvFactory.Register<Categories>(builder =>
+            {
+
+                builder.Add(a => a.CategoryID).Type(typeof(int)).ColumnName("CategoryID");
+                builder.Add(a => a.CategoryName).Type(typeof(string)).ColumnName("CategoryName");
+
+            }, true, ',', categories);
+
+            List<Categories> cats = await CsvFactory.Parse<Categories>();
+
+            return cats;
+
+        }
+
 
         public static async Task CsvWriter<T>(List<T> list, string fileName)
         {

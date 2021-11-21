@@ -106,6 +106,9 @@ namespace LTVGrowth.Core
         public decimal total_spending { get; set; }
         public decimal spending_360 { get; set; }
 
+        public int CategoryID { get; set; }
+        public string CategoryName { get; set; }
+        public string operator_country { get; set; }
 
 
 
