@@ -167,6 +167,16 @@ namespace Jawabkom_Generator3.Core
         }
 
 
+        public static GoogleSheetsKeys DataArifDontTouch()
+        {
+            GoogleSheetsKeys DataArifDontTouch = new GoogleSheetsKeys();
+            DataArifDontTouch.SheetTitle = "Data-Arif-Dont-Touch";
+            DataArifDontTouch.Key = "1PaxAzMmtCENLz2MT24o65NqsMidazGkwiMYs9WexeDI";
+            return DataArifDontTouch;
+        }
+
+
+
 
     }
 

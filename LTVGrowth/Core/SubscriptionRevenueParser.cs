@@ -1,12 +1,11 @@
 ﻿using CsvFramework;
-
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Jawabkom_Generator3.Core
+namespace LTVGrowth.Core
 {
     public class SubscriptionRevenueParser : IPaseringAsync<SubscriptionRevenue>
     {
@@ -23,7 +22,8 @@ namespace Jawabkom_Generator3.Core
 
             ParserResult result = new ParserResult();
 
-            if (item.payment_gateway != "tpay" || item.is_demo != 0)
+            if (item.payment_gateway != "tpay" && item.is_demo != 0)
+            //if (item.payment_gateway != "tpay" || item.is_demo != 0 || item.created_date >= "2017-01-01")
             {
                 result.SkipThis = true;
                 return result;
@@ -37,4 +37,5 @@ namespace Jawabkom_Generator3.Core
         }
 
     }
+
 }

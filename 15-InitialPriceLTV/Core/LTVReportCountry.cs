@@ -8,6 +8,7 @@ namespace _15_InitialPriceLTV.Core
 {
     public class LTVReportCountry
     {
+        public string created_date { get; set; }
         public string Project { get; set; }
         public string country_code { get; set; }
         public string site_lang { get; set; }

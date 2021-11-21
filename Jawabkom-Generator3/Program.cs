@@ -22,17 +22,17 @@ namespace Jawabkom_Generator3
         {
 
 
-            await Jawabkom.RawRevenuesLastMonthly();
+            //await Jawabkom.RawRevenuesLastMonthly();
 
-            var lists = await Jawabkom.NewLTVSameMonth();
+            //var lists = await Jawabkom.NewLTVSameMonth();
 
-            await Jawabkom.RawFinalReportMonthly(lists);
+            //await Jawabkom.RawFinalReportMonthly(lists);
 
-            await Jawabkom.LTVModels(lists);
+            //await Jawabkom.LTVModels(lists);
 
-            await Jawabkom.DailyCost();
+            //await Jawabkom.DailyCost();
 
-            await Jawabkom.RawMonthlyClicks();
+            //await Jawabkom.RawMonthlyClicks();
 
 
 
@@ -41,11 +41,11 @@ namespace Jawabkom_Generator3
 
 
             //////GET GOOGLE SHEETS DATA
-            //var sheet = GoogleSheetsKeys.JawabTawzeef_RawRevenuesLastMonthly();
-            //var gsh = new GoogleSheetsHelper.GoogleSheetsHelper(sheet.FilePath, sheet.Key);
-            //var gsp = new GoogleSheetParameters() { RangeColumnStart = 1, RangeRowStart = 1, RangeColumnEnd = 20, RangeRowEnd = 30000, FirstRowIsHeaders = true, SheetName = sheet.SheetTitle };
-            //var rowValues = gsh.GetDataFromSheet(gsp);
-            //ExcelFactory.ExportExcelTable(rowValues, sheet.SheetTitle);
+            var sheet = GoogleSheetsKeys.DataArifDontTouch();
+            var gsh = new GoogleSheetsHelper.GoogleSheetsHelper(sheet.FilePath, sheet.Key);
+            var gsp = new GoogleSheetParameters() { RangeColumnStart = 1, RangeRowStart = 1, RangeColumnEnd = 20, RangeRowEnd = 30000, FirstRowIsHeaders = true, SheetName = sheet.SheetTitle };
+            var rowValues = gsh.GetDataFromSheet(gsp);
+            ExcelFactory.ExportExcelTable(rowValues, sheet.SheetTitle);
 
 
 

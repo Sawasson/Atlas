@@ -8,6 +8,7 @@ namespace _15_InitialPriceLTV.Core
 {
     public class LTVReportCategoryMerge
     {
+        public string created_date { get; set; }
         public string Project { get; set; }
         public string source { get; set; }
         public string country_code { get; set; }

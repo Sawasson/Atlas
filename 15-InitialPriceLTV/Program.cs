@@ -66,7 +66,9 @@ namespace _15_InitialPriceLTV
         static async Task Main(string[] args)
         {
             var list = await GroupLtvOnPrice();
-            await ArifDataDontTouch(list);
+            await LtvReportCategoryMergeTest2(list);
+            await SaleandComLTV(list);
+
         }
 
         public static async Task<List<SubscriptionRevenue>> GroupLtvOnPrice()
@@ -404,8 +406,7 @@ namespace _15_InitialPriceLTV
                 
             }
 
-            var yyy = groups_currency.Where(x => x.Project == "Jawabsale" ).ToList();
-            var xxx = yyy.Where(x => x.utm_medium_at_subscription != null).ToList();
+
             int uu = 0;
             foreach (var item in groups_currency)
             {
@@ -425,7 +426,7 @@ namespace _15_InitialPriceLTV
         }
 
 
-        public static async Task ArifDataDontTouch(List<SubscriptionRevenue> list)
+        public static async Task LtvReportCategoryMerge(List<SubscriptionRevenue> list)
         {
             var ltv_report = list;
 
@@ -564,12 +565,225 @@ namespace _15_InitialPriceLTV
 
             LTVReportCategoryMerge = await LTVDecider(LTVReportCategoryMerge);
 
-            LTVReportCategoryMerge.Where(x => x.source == "Facebook").OrderBy(x=>x.LTV).ToList();
 
+            LTVReportCategoryMerge = LTVReportCategoryMerge.Where(x => x.source == "Facebook").OrderBy(x=>x.LTV).ToList();
+
+
+            var AllArifCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Data-Arif-Dont-Touch.csv");
+
+            var ltvOther = await ParseDataArifDontTouch(AllArifCSV);
+
+
+            LTVReportCategoryMerge = LTVReportCategoryMerge.Concat(ltvOther).ToList();
+
+            await CsvWriter(LTVReportCategoryMerge, "ltv_report_category_merge");
 
 
 
         }
+
+        public static async Task LtvReportCategoryMergeTest2(List<SubscriptionRevenue> list)
+        {
+            var ltv_report = list;
+
+            ltv_report = ltv_report.Where(x => x.model == "SameMonth").ToList();
+
+            var ltv_report_category_ = ltv_report.GroupBy(x => new
+            {
+                x.created_date,
+                x.Project,
+                x.source,
+                x.country_code,
+                x.CategoryName,
+                x.site_lang,
+            }).Select(x => new SubscriptionRevenue
+            {
+                created_date = x.Key.created_date,
+                Project = x.Key.Project,
+                source = x.Key.source,
+                country_code = x.Key.country_code,
+                CategoryName = x.Key.CategoryName,
+                site_lang = x.Key.site_lang,
+                usd_amount = x.Sum(x => x.usd_amount),
+                user_id = x.Count(),
+            }).ToList();
+
+
+            var ltv_report_source_ = ltv_report.GroupBy(x => new
+            {
+                x.created_date,
+                x.Project,
+                x.source,
+                x.country_code,
+                x.site_lang,
+            }).Select(x => new SubscriptionRevenue
+            {
+                created_date = x.Key.created_date,
+                Project = x.Key.Project,
+                source = x.Key.source,
+                country_code = x.Key.country_code,
+                site_lang = x.Key.site_lang,
+                usd_amount = x.Sum(x => x.usd_amount),
+                user_id = x.Count(),
+            }).ToList();
+
+
+            var ltv_report_country_ = ltv_report.GroupBy(x => new
+            {
+                x.created_date,
+                x.Project,
+                x.country_code,
+                x.site_lang,
+            }).Select(x => new SubscriptionRevenue
+            {
+                created_date = x.Key.created_date,
+                Project = x.Key.Project,
+                country_code = x.Key.country_code,
+                site_lang = x.Key.site_lang,
+                usd_amount = x.Sum(x => x.usd_amount),
+                user_id = x.Count(),
+            }).ToList();
+
+            List<LTVReportCategory> ltv_report_category = new List<LTVReportCategory>();
+            foreach (var item in ltv_report_category_)
+            {
+                LTVReportCategory lTVReportCategory = new LTVReportCategory();
+                lTVReportCategory.created_date = item.created_date;
+                lTVReportCategory.CategoryName = item.CategoryName;
+                lTVReportCategory.country_code = item.country_code;
+                lTVReportCategory.Project = item.Project;
+                lTVReportCategory.source = item.source;
+                lTVReportCategory.site_lang = item.site_lang;
+                lTVReportCategory.category_count = item.user_id;
+                lTVReportCategory.usd_amount_category = item.usd_amount;
+                lTVReportCategory.category_LTV = lTVReportCategory.usd_amount_category / lTVReportCategory.category_count;
+                ltv_report_category.Add(lTVReportCategory);
+            }
+
+            List<LTVReportSource> ltv_report_source = new List<LTVReportSource>();
+            foreach (var item in ltv_report_source_)
+            {
+                LTVReportSource lTVReportSource = new LTVReportSource();
+                lTVReportSource.created_date = item.created_date;
+                lTVReportSource.country_code = item.country_code;
+                lTVReportSource.Project = item.Project;
+                lTVReportSource.source = item.source;
+                lTVReportSource.site_lang = item.site_lang;
+                lTVReportSource.source_count = item.user_id;
+                lTVReportSource.usd_amount_source = item.usd_amount;
+                lTVReportSource.source_LTV = lTVReportSource.usd_amount_source / lTVReportSource.source_count;
+                ltv_report_source.Add(lTVReportSource);
+            }
+
+            List<LTVReportCountry> ltv_report_country = new List<LTVReportCountry>();
+            foreach (var item in ltv_report_country_)
+            {
+                LTVReportCountry lTVReportCountry = new LTVReportCountry();
+                lTVReportCountry.created_date = item.created_date;
+                lTVReportCountry.country_code = item.country_code;
+                lTVReportCountry.Project = item.Project;
+                lTVReportCountry.site_lang = item.site_lang;
+                lTVReportCountry.country_count = item.user_id;
+                lTVReportCountry.usd_amount_country = item.usd_amount;
+                lTVReportCountry.country_LTV = lTVReportCountry.usd_amount_country / lTVReportCountry.country_count;
+                ltv_report_country.Add(lTVReportCountry);
+            }
+
+
+            List<LTVReportCategoryMerge> LTVReportCategoryMerge = new List<LTVReportCategoryMerge>();
+
+            var lookupSource = GetLtvLookupSourceTest2(ltv_report_source);
+
+            var lookupCountry = GetLtvLookupCountryTest2(ltv_report_country);
+
+
+            foreach (var item in ltv_report_category)
+            {
+                var source = lookupSource.Result[item.created_date, item.Project, item.source, item.country_code, item.site_lang].FirstOrDefault();
+                var country = lookupCountry.Result[item.created_date, item.Project, item.country_code, item.site_lang].FirstOrDefault();
+
+
+                LTVReportCategoryMerge lTVReportCategoryMerges = new LTVReportCategoryMerge();
+                lTVReportCategoryMerges.created_date = item.created_date;
+                lTVReportCategoryMerges.Project = item.Project;
+                lTVReportCategoryMerges.source = item.source;
+                lTVReportCategoryMerges.country_code = item.country_code;
+                lTVReportCategoryMerges.site_lang = item.site_lang;
+                lTVReportCategoryMerges.category_count = item.category_count;
+                lTVReportCategoryMerges.usd_amount_category = item.usd_amount_category;
+                lTVReportCategoryMerges.category_LTV = item.category_LTV;
+                lTVReportCategoryMerges.source_count = source.source_count;
+                lTVReportCategoryMerges.usd_amount_source = source.usd_amount_source;
+                lTVReportCategoryMerges.source_LTV = source.source_LTV;
+                lTVReportCategoryMerges.country_count = country.country_count;
+                lTVReportCategoryMerges.usd_amount_country = country.usd_amount_country;
+                lTVReportCategoryMerges.country_LTV = country.country_LTV;
+                LTVReportCategoryMerge.Add(lTVReportCategoryMerges);
+
+
+
+            }
+
+            LTVReportCategoryMerge = await LTVDecider(LTVReportCategoryMerge);
+
+
+            LTVReportCategoryMerge = LTVReportCategoryMerge.Where(x => x.source == "Facebook").OrderBy(x => x.LTV).ToList();
+
+
+            var AllArifCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Data-Arif-Dont-Touch.csv");
+
+            var ltvOther = await ParseDataArifDontTouch(AllArifCSV);
+
+
+            LTVReportCategoryMerge = LTVReportCategoryMerge.Concat(ltvOther).ToList();
+
+            await CsvWriter(LTVReportCategoryMerge, "test_ltv_report");
+
+
+
+        }
+
+
+        public static async Task SaleandComLTV(List<SubscriptionRevenue> list)
+        {
+            var distributionTeam = list;
+
+            distributionTeam = distributionTeam.Where(x => x.model == "SameMonth").ToList();
+
+            var distributionTeamGroup = distributionTeam.GroupBy(x => new
+            {
+                x.Project,
+                x.created_date,
+                x.tpay_activated_date,
+                x.period_type,
+                x.country_code,
+                x.operator_name,
+                x.source,
+                x.site_lang,
+                x.Parked,
+                x.CategoryName,
+            }).Select(x => new SubscriptionRevenue
+            {
+                Project = x.Key.Project,
+                created_date = x.Key.created_date,
+                tpay_activated_date = x.Key.tpay_activated_date,
+                period_type = x.Key.period_type,
+                country_code = x.Key.country_code,
+                operator_name = x.Key.operator_name,
+                source = x.Key.source,
+                site_lang = x.Key.site_lang,
+                Parked = x.Key.Parked,
+                CategoryName = x.Key.CategoryName,
+                user_id = x.Count(),
+                usd_amount = x.Sum(x => x.usd_amount),
+            }).ToList();
+
+            distributionTeamGroup = distributionTeamGroup.Where(x => x.Project == "Jawabsale").ToList();
+            //distributionTeamGroup = distributionTeamGroup.Where(x => x.Project == "Jawabkom").ToList();
+
+            await CsvWriter(distributionTeamGroup, "SaleandComLTV");
+        }
+
 
         public static async Task<List<LTVReportCategoryMerge>> LTVDecider(List<LTVReportCategoryMerge> list)
         {
@@ -619,6 +833,21 @@ namespace _15_InitialPriceLTV
             return lookup;
         }
 
+        public static async Task<LtvLookupSourceTest2<string, string, string, string, string, LTVReportSource>> GetLtvLookupSourceTest2(List<LTVReportSource> list)
+        {
+            //var data = await this.GetAllAsync<LTVReportSource>(nameof(LTVReportSource)).ConfigureAwait(false);
+            var lookup = new LtvLookupSourceTest2<string, string, string, string, string, LTVReportSource>(list, item => Tuple.Create(item.created_date, item.Project, item.source, item.country_code, item.site_lang));
+
+            return lookup;
+        }
+
+        public static async Task<LtvLookupCountryTest2<string, string, string, string, LTVReportCountry>> GetLtvLookupCountryTest2(List<LTVReportCountry> list)
+        {
+            //var data = await this.GetAllAsync<LTVReportSource>(nameof(LTVReportSource)).ConfigureAwait(false);
+            var lookup = new LtvLookupCountryTest2<string, string, string, string, LTVReportCountry>(list, item => Tuple.Create(item.created_date, item.Project, item.country_code, item.site_lang));
+
+            return lookup;
+        }
 
         public static async Task CsvWriter<T>(List<T> list, string fileName)
         {
@@ -647,7 +876,6 @@ namespace _15_InitialPriceLTV
             return categories;
         }
 
-
         private static async Task<List<Categories>> ParseCategories(string[] categories)
         {
 
@@ -664,7 +892,6 @@ namespace _15_InitialPriceLTV
             return cats;
 
         }
-
 
         private static async Task<List<SubscriptionRevenue>> ParseSubscriptions(string[] subscriptions)
         {
@@ -835,6 +1062,27 @@ namespace _15_InitialPriceLTV
             List<Currency> currencies = await CsvFactory.Parse<Currency>();
 
             return currencies;
+
+        }
+
+        private static async Task<List<LTVReportCategoryMerge>> ParseDataArifDontTouch(string[] arif)
+        {
+
+            CsvFactory.Register<LTVReportCategoryMerge>(builder =>
+            {
+
+                builder.Add(a => a.Project).Type(typeof(string)).ColumnName("Project");
+                builder.Add(a => a.source).Type(typeof(string)).ColumnName("Source");
+                builder.Add(a => a.country_code).Type(typeof(string)).ColumnName("country_code");
+                builder.Add(a => a.site_lang).Type(typeof(string)).ColumnName("site_lang");
+                builder.Add(a => a.source_LTV).Type(typeof(decimal)).ColumnName("source_LTV");
+                builder.Add(a => a.country_LTV).Type(typeof(decimal)).ColumnName("country_LTV");
+                builder.Add(a => a.LTV).Type(typeof(decimal)).ColumnName("LTV");
+            }, true, ',', arif);
+
+            List<LTVReportCategoryMerge> datas = await CsvFactory.Parse<LTVReportCategoryMerge>();
+
+            return datas;
 
         }
 
