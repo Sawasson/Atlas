@@ -69,6 +69,7 @@ namespace Jawabkom_Generator3
 
             var revenue = allSubs;
 
+            //Bu bölüm parser içine alınabilir
             foreach (var item in revenue)
             {
                 item.Parked = ParseParkedDays(item.created_date, item.tpay_activated_date, false);
@@ -92,7 +93,7 @@ namespace Jawabkom_Generator3
                 operator_name = x.Key.operator_name,
                 Parked = x.Key.Parked,
                 period_type = x.Key.period_type,
-                user_id = x.GroupBy(x => x.user_id).Count(),
+                user_id = x.Count(),
                 currency_amount = x.Sum(x => x.currency_amount),
             }).ToList();
 
@@ -149,7 +150,7 @@ namespace Jawabkom_Generator3
 
             }
 
-
+            //Ana liste tekrar kullanılıyormu kontrol et
             foreach (var item in revenue)
             {
                 item.created_date = DatetimeMonthlyParse(item.created_date);
@@ -176,6 +177,7 @@ namespace Jawabkom_Generator3
                 net_usd_amount = x.Sum(x => x.net_usd_amount),
             }).ToList();
 
+            //Todo: index kaldırılacak
             int i = 0;
             foreach (var item in allSubs)
             {
@@ -238,26 +240,21 @@ namespace Jawabkom_Generator3
                 currency_amount = x.Sum(x => x.currency_amount),
             }).ToList();
 
+            //Todo: firstSubList gerek yok, direk count yapabiliriz
             var firstSubList = allSubs.Where(x => x.is_first_sub == 1).ToList();
-
-            foreach (var sub in firstSubList)
-            {
-                sub.Parked = ParseParkedDays(sub.tpay_activated_date, sub.created_date, false);
-            }
-
-            var counts = firstSubList;
 
             var lookupUserSpendingList = userSpendingList.ToLookup(p => p.user_id);
 
 
-            foreach (var count in counts)
+            foreach (var sub in firstSubList)
             {
-
-                var UserSpending = lookupUserSpendingList[count.user_id].FirstOrDefault();
-                count.currency_amount = UserSpending.currency_amount;
+                sub.Parked = ParseParkedDays(sub.tpay_activated_date, sub.created_date, false);
+                var UserSpending = lookupUserSpendingList[sub.user_id].SingleOrDefault();
+                sub.currency_amount = UserSpending.currency_amount;
             }
 
-            var dateCounts = counts.GroupBy(x => new
+
+            var dateCountsx = firstSubList.GroupBy(x => new
             {
                 x.created_date,
                 x.country_code,
@@ -282,31 +279,43 @@ namespace Jawabkom_Generator3
             }).ToList();
 
 
-            var dateCountsx = dateCounts.GroupBy(x => new
-            {
-                x.created_date,
-                x.country_code,
-                x.utm_source_at_subscription,
-                x.currency_code,
-                x.operator_name,
-                x.Parked,
-                x.period_type,
-                x.tpay_activated_date,
-            }).Select(x => new SubscriptionRevenue
-            {
-                created_date = x.Key.created_date,
-                country_code = x.Key.country_code,
-                utm_source_at_subscription = x.Key.utm_source_at_subscription,
-                currency_code = x.Key.currency_code,
-                operator_name = x.Key.operator_name,
-                Parked = x.Key.Parked,
-                period_type = x.Key.period_type,
-                tpay_activated_date = x.Key.tpay_activated_date,
-                user_id = x.Count(),
-                currency_amount = x.Sum(x => x.currency_amount),
-            }).ToList();
+            //var dateCountsx = dateCounts.GroupBy(x => new
+            //{
+            //    x.created_date,
+            //    x.country_code,
+            //    x.utm_source_at_subscription,
+            //    x.currency_code,
+            //    x.operator_name,
+            //    x.Parked,
+            //    x.period_type,
+            //    x.tpay_activated_date,
+            //}).Select(x => new SubscriptionRevenue
+            //{
+            //    created_date = x.Key.created_date,
+            //    country_code = x.Key.country_code,
+            //    utm_source_at_subscription = x.Key.utm_source_at_subscription,
+            //    currency_code = x.Key.currency_code,
+            //    operator_name = x.Key.operator_name,
+            //    Parked = x.Key.Parked,
+            //    period_type = x.Key.period_type,
+            //    tpay_activated_date = x.Key.tpay_activated_date,
+            //    user_id = x.Count(),
+            //    currency_amount = x.Sum(x => x.currency_amount),
+            //}).ToList();
 
-            var dateCountsNewLtv = dateCountsx;
+
+            List<SubscriptionRevenue> dateCountsNewLtv = new List<SubscriptionRevenue>();
+
+            //Todo: Clonlanacak
+            foreach (var item in dateCountsx)
+            {
+                dateCountsNewLtv.Add(new SubscriptionRevenue 
+                
+                { 
+                
+                
+                });
+            }
 
             foreach (var item in dateCountsNewLtv)
             {
@@ -355,14 +364,16 @@ namespace Jawabkom_Generator3
 
             }
 
-            foreach (var item in dateCountsNewLtv)
-            {
-                item.created_date = DatetimeMonthlyParse(item.created_date);
-                if (item.tpay_activated_date==null)
-                {
-                    item.tpay_activated_date = item.created_date;
-                }
-            }
+            dateCountsNewLtv = dateCountsNewLtv.Where(x => x.tpay_activated_date == x.created_date).ToList();
+
+            //foreach (var item in dateCountsNewLtv)
+            //{
+            //    item.created_date = DatetimeMonthlyParse(item.created_date);
+            //    if (item.tpay_activated_date==null)
+            //    {
+            //        item.tpay_activated_date = item.created_date;
+            //    }
+            //}
 
             var dateCountsNewLtv_ = dateCountsNewLtv.GroupBy(x => new
             {
@@ -501,7 +512,7 @@ namespace Jawabkom_Generator3
                 operator_name = x.Key.operator_name,
                 Parked = x.Key.Parked,
                 period_type = x.Key.period_type,
-                user_id = x.Count(),
+                user_id = x.Sum(x=>x.user_id),
                 usd_amount = x.Sum(x => x.usd_amount),
                 net_usd_amount = x.Sum(x => x.net_usd_amount),
             }).ToList();
@@ -659,6 +670,12 @@ namespace Jawabkom_Generator3
 
             await CsvWriter(dailyCostGroup, "daily_cost");
 
+            //Todo:Savaş datetime çözülecek
+            //foreach (var item in dailyCostGroup)
+            //{
+            //    item.created_date = DatetimeMonthlyParse(item.created_date);
+            //}
+
             dailyCostGroup = dailyCostGroup.GroupBy(x => new
             {
                 x.created_date,
@@ -757,7 +774,7 @@ namespace Jawabkom_Generator3
 
 
 
-
+        //Todo:Çağlar CSV ler kolon bazında işleme alınmalı
         public static async Task CsvWriter<T>(List<T> list, string fileName)
         {
             //string path = "C:/Users/savas/Desktop/list.csv";

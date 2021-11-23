@@ -48,9 +48,13 @@ namespace LTVGrowth.Core
 
         public string first_subscription_subject_id { get; set; }
 
-        public DateTime created_date { get; set; }
+        public string created_date { get; set; }
+        public DateTime DT_created_date { get; set; }
 
-        public DateTime tpay_activated_date { get; set; }
+
+        public string tpay_activated_date { get; set; }
+        public DateTime DT_tpay_activated_date { get; set; }
+
         public string Language { get; set; }
         public string User { get; set; }
         public string Channel { get; set; }
@@ -88,7 +92,9 @@ namespace LTVGrowth.Core
         public bool taboola { get; set; }
         public bool postquare { get; set; }
         public string model { get; set; }
-        public DateTime first_sub_date { get; set; }
+        public string first_sub_date { get; set; }
+        public DateTime DT_first_sub_date { get; set; }
+
         public decimal Days7 { get; set; }
         public decimal Days14 { get; set; }
         public decimal Days30 { get; set; }

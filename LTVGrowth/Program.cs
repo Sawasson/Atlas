@@ -17,6 +17,8 @@ namespace LTVGrowth
         static async Task Main(string[] args)
         {
             await LTVGrowthRawSameMonth();
+            await FullLTVGrowthRawSameMonth();
+
         }
 
         public static async Task LTVGrowthRawSameMonth()
@@ -39,6 +41,28 @@ namespace LTVGrowth
             int p = 0;
             foreach (var sub in dataf)
             {
+                try
+                {
+                    sub.DT_created_date = DateTime.ParseExact(sub.created_date, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                }
+                catch (Exception)
+                {
+
+                }
+                try
+                {
+                    sub.DT_tpay_activated_date = DateTime.ParseExact(sub.tpay_activated_date, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                }
+                catch (Exception)
+                {
+                }
+                //try
+                //{
+                //    sub.DT_first_sub_date = DateTime.ParseExact(sub.first_sub_date, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                //}
+                //catch (Exception)
+                //{
+                //}
 
                 var currency = lookupCurrency[sub.currency_code].FirstOrDefault();
 
@@ -78,7 +102,12 @@ namespace LTVGrowth
 
             var dfx_first_date = dataf.Where(x => x.is_first_sub == 1).ToList();
 
-            dfx_first_date = dfx_first_date.OrderBy(x => x.created_date).ThenBy(x => x.user_id).ToList();
+            dfx_first_date = dfx_first_date.OrderBy(x => x.DT_created_date).ThenBy(x => x.user_id).ToList();
+
+            foreach (var item in dfx_first_date)
+            {
+                item.DT_first_sub_date = item.DT_created_date;
+            }
 
             dfx_first_date = dfx_first_date.GroupBy(x => new
             {
@@ -86,7 +115,7 @@ namespace LTVGrowth
             }).Select(x => new SubscriptionRevenue
             {
                 user_id = x.Key.user_id,
-                first_sub_date = x.Min(x => x.created_date),
+                DT_first_sub_date = x.Min(x => x.DT_created_date),
             }).ToList();
 
             var lookupDfxFirstDate = dfx_first_date.ToLookup(p => p.user_id);
@@ -102,7 +131,7 @@ namespace LTVGrowth
                 {
                     try
                     {
-                        item.first_sub_date = firstDate.first_sub_date;
+                        item.DT_first_sub_date = firstDate.DT_first_sub_date;
                         z++;
                     }
                     catch (Exception)
@@ -121,37 +150,37 @@ namespace LTVGrowth
             foreach (var item in dataf)
             {
                 
-                item.Days7 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(7)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days14 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(14)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days30 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(30)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days60 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(60)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days90 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(90)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days120 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(120)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days150 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(150)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days180 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(180)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days210 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(210)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days240 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(240)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days270 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(270)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days300 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(300)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days330 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(330)).Select(x => x.usd_amount).FirstOrDefault();
-                item.Days360 = dataf.Where(x => x.created_date <= item.first_sub_date.AddDays(360)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days7 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(7)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days14 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(14)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days30 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(30)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days60 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(60)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days90 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(90)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days120 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(120)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days150 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(150)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days180 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(180)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days210 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(210)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days240 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(240)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days270 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(270)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days300 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(300)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days330 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(330)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days360 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(360)).Select(x => x.usd_amount).FirstOrDefault();
 
-                item.tpay_activated_date = DatetimeMonthlyParse(item.tpay_activated_date);
+                item.DT_tpay_activated_date = DatetimeMonthlyParse(item.DT_tpay_activated_date);
 
-                item.first_sub_date = DatetimeMonthlyParse(item.first_sub_date);
+                item.DT_first_sub_date = DatetimeMonthlyParse(item.DT_first_sub_date);
 
             }
 
             /////////////////for same_month//////////////////////////////////////////////
             var orj_dataf = dataf;
 
-            dataf = dataf.Where(x => x.tpay_activated_date == x.first_sub_date).ToList();
+            dataf = dataf.Where(x => x.DT_tpay_activated_date == x.DT_first_sub_date).ToList();
 
 
             dataf = dataf.GroupBy(x => new
             {
                 x.user_id,
-                x.first_sub_date,
+                x.DT_first_sub_date,
                 x.country_code,
                 x.operator_name,
                 x.currency_code,
@@ -160,7 +189,7 @@ namespace LTVGrowth
             }).Select(x => new SubscriptionRevenue
             {
                 user_id = x.Key.user_id,
-                first_sub_date = x.Key.first_sub_date,
+                DT_first_sub_date = x.Key.DT_first_sub_date,
                 country_code = x.Key.country_code,
                 operator_name = x.Key.operator_name,
                 currency_code = x.Key.currency_code,
@@ -195,7 +224,7 @@ namespace LTVGrowth
 
             dataf = dataf.GroupBy(x => new
             {
-                x.first_sub_date,
+                x.DT_first_sub_date,
                 x.country_code,
                 x.operator_name,
                 x.currency_code,
@@ -203,7 +232,7 @@ namespace LTVGrowth
                 x.first_subscription_subject_id,
             }).Select(x => new SubscriptionRevenue
             {
-                first_sub_date = x.Key.first_sub_date,
+                DT_first_sub_date = x.Key.DT_first_sub_date,
                 country_code = x.Key.country_code,
                 operator_name = x.Key.operator_name,
                 currency_code = x.Key.currency_code,
@@ -257,13 +286,13 @@ namespace LTVGrowth
             /////////////////for old_model//////////////////////////////////////////////
             dataf = orj_dataf;
 
-            dataf = dataf.Where(x => x.tpay_activated_date == x.first_sub_date).ToList();
+            dataf = dataf.Where(x => x.DT_tpay_activated_date == x.DT_first_sub_date).ToList();
 
 
             dataf = dataf.GroupBy(x => new
             {
                 x.user_id,
-                x.first_sub_date,
+                x.DT_first_sub_date,
                 x.country_code,
                 x.operator_name,
                 x.currency_code,
@@ -271,7 +300,7 @@ namespace LTVGrowth
             }).Select(x => new SubscriptionRevenue
             {
                 user_id = x.Key.user_id,
-                first_sub_date = x.Key.first_sub_date,
+                DT_first_sub_date = x.Key.DT_first_sub_date,
                 country_code = x.Key.country_code,
                 operator_name = x.Key.operator_name,
                 currency_code = x.Key.currency_code,
@@ -305,14 +334,14 @@ namespace LTVGrowth
 
             dataf = dataf.GroupBy(x => new
             {
-                x.first_sub_date,
+                x.DT_first_sub_date,
                 x.country_code,
                 x.operator_name,
                 x.currency_code,
                 x.period_type,
             }).Select(x => new SubscriptionRevenue
             {
-                first_sub_date = x.Key.first_sub_date,
+                DT_first_sub_date = x.Key.DT_first_sub_date,
                 country_code = x.Key.country_code,
                 operator_name = x.Key.operator_name,
                 currency_code = x.Key.currency_code,
@@ -410,6 +439,427 @@ namespace LTVGrowth
 
         }
 
+        public static async Task FullLTVGrowthRawSameMonth()
+        {
+            var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\users_subscriptions.csv");
+            var dataf = await ParseSubscriptions(AllSubsCSV);
+
+            var AllCurrencyCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\currency.xls");
+            var currencyList = await ParseCurrency(AllCurrencyCSV);
+
+            var PayoutsCSV = System.IO.File.ReadAllLines(@"C:\temp\operator_payouts.csv");
+            List<OperatorPayout> allPayouts = await ParseOperatorPayouts(PayoutsCSV);
+
+
+            var lookupCurrency = currencyList.ToLookup(p => p.currency_code);
+
+            var lookupPayouts = allPayouts.ToLookup(p => p.operator_name);
+
+            int e = 0;
+            int p = 0;
+            foreach (var sub in dataf)
+            {
+
+                try
+                {
+                    sub.DT_created_date = DateTime.ParseExact(sub.created_date, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                }
+                catch (Exception)
+                {
+
+                }
+                try
+                {
+                    sub.DT_tpay_activated_date = DateTime.ParseExact(sub.tpay_activated_date, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                }
+                catch (Exception)
+                {
+                }
+                //try
+                //{
+                //    sub.DT_first_sub_date = DateTime.ParseExact(sub.first_sub_date, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                //}
+                //catch (Exception)
+                //{
+                //}
+
+                var currency = lookupCurrency[sub.currency_code].FirstOrDefault();
+
+                var payout = lookupPayouts[sub.operator_name].FirstOrDefault();
+
+                if (currency != null)
+                {
+                    try
+                    {
+                        sub.usd_amount = sub.currency_amount / (decimal)currency.quotes;
+                        p++;
+                    }
+                    catch (Exception)
+                    {
+                        e++;
+                        if (e >= dataf.Count * 0.01)
+                        {
+                            throw;
+                        }
+                    }
+                }
+
+                if (payout != null)
+                {
+                    sub.net_usd_amount = sub.usd_amount * decimal.Parse(payout.payout_percentage.Replace("%", "")) / 100;
+                }
+            }
+
+            var userSpendingList = dataf.GroupBy(x => new
+            {
+                x.user_id,
+            }).Select(x => new UserSpending
+            {
+                user_id = x.Key.user_id,
+                total_spending = x.Sum(x => x.usd_amount),
+            }).ToList();
+
+            var dfx_first_date = dataf.Where(x => x.is_first_sub == 1).ToList();
+
+            dfx_first_date = dfx_first_date.OrderBy(x => x.DT_created_date).ThenBy(x => x.user_id).ToList();
+
+            foreach (var item in dfx_first_date)
+            {
+                item.DT_first_sub_date = item.DT_created_date;
+            }
+
+            dfx_first_date = dfx_first_date.GroupBy(x => new
+            {
+                x.user_id,
+            }).Select(x => new SubscriptionRevenue
+            {
+                user_id = x.Key.user_id,
+                DT_first_sub_date = x.Min(x => x.DT_created_date),
+            }).ToList();
+
+            var lookupDfxFirstDate = dfx_first_date.ToLookup(p => p.user_id);
+
+
+            int i = 0;
+            int z = 0;
+            foreach (var item in dataf)
+            {
+                var firstDate = lookupDfxFirstDate[item.user_id].FirstOrDefault();
+
+                if (firstDate != null)
+                {
+                    try
+                    {
+                        item.DT_first_sub_date = firstDate.DT_first_sub_date;
+                        z++;
+                    }
+                    catch (Exception)
+                    {
+                        i++;
+                        if (i >= dataf.Count * 0.01)
+                        {
+                            throw;
+                        }
+                    }
+                }
+            }
+
+            int[] DaysPeriod = new int[] { 7, 14, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360 };
+
+            foreach (var item in dataf)
+            {
+
+                item.Days7 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(7)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days14 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(14)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days30 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(30)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days60 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(60)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days90 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(90)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days120 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(120)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days150 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(150)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days180 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(180)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days210 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(210)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days240 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(240)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days270 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(270)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days300 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(300)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days330 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(330)).Select(x => x.usd_amount).FirstOrDefault();
+                item.Days360 = dataf.Where(x => x.DT_created_date <= item.DT_first_sub_date.AddDays(360)).Select(x => x.usd_amount).FirstOrDefault();
+
+                item.DT_tpay_activated_date = DatetimeMonthlyParse(item.DT_tpay_activated_date);
+
+                item.DT_first_sub_date = DatetimeMonthlyParse(item.DT_first_sub_date);
+
+            }
+
+            /////////////////for same_month//////////////////////////////////////////////
+            var orj_dataf = dataf;
+
+            dataf = dataf.Where(x => x.DT_tpay_activated_date == x.DT_first_sub_date).ToList();
+
+
+            dataf = dataf.GroupBy(x => new
+            {
+                x.user_id,
+                x.DT_first_sub_date,
+                x.country_code,
+                x.operator_name,
+                x.currency_code,
+                x.period_type,
+                x.first_subscription_subject_id,
+            }).Select(x => new SubscriptionRevenue
+            {
+                user_id = x.Key.user_id,
+                DT_first_sub_date = x.Key.DT_first_sub_date,
+                country_code = x.Key.country_code,
+                operator_name = x.Key.operator_name,
+                currency_code = x.Key.currency_code,
+                period_type = x.Key.period_type,
+                first_subscription_subject_id = x.Key.first_subscription_subject_id,
+                Days7 = x.Sum(x => x.Days7),
+                Days14 = x.Sum(x => x.Days14),
+                Days30 = x.Sum(x => x.Days30),
+                Days60 = x.Sum(x => x.Days60),
+                Days90 = x.Sum(x => x.Days90),
+                Days120 = x.Sum(x => x.Days120),
+                Days150 = x.Sum(x => x.Days150),
+                Days180 = x.Sum(x => x.Days180),
+                Days210 = x.Sum(x => x.Days210),
+                Days240 = x.Sum(x => x.Days240),
+                Days270 = x.Sum(x => x.Days270),
+                Days300 = x.Sum(x => x.Days300),
+                Days330 = x.Sum(x => x.Days330),
+                Days360 = x.Sum(x => x.Days360),
+            }).ToList();
+
+
+            var lookupUserSpendingList = userSpendingList.ToLookup(p => p.user_id);
+
+
+            foreach (var data in dataf)
+            {
+
+                var UserSpending = lookupUserSpendingList[data.user_id].FirstOrDefault();
+                data.total_spending = UserSpending.total_spending;
+            }
+
+            dataf = dataf.GroupBy(x => new
+            {
+                x.DT_first_sub_date,
+                x.country_code,
+                x.operator_name,
+                x.currency_code,
+                x.period_type,
+                x.first_subscription_subject_id,
+            }).Select(x => new SubscriptionRevenue
+            {
+                DT_first_sub_date = x.Key.DT_first_sub_date,
+                country_code = x.Key.country_code,
+                operator_name = x.Key.operator_name,
+                currency_code = x.Key.currency_code,
+                period_type = x.Key.period_type,
+                first_subscription_subject_id = x.Key.first_subscription_subject_id,
+                user_id = x.Count(),
+                Days7 = x.Sum(x => x.Days7),
+                Days14 = x.Sum(x => x.Days14),
+                Days30 = x.Sum(x => x.Days30),
+                Days60 = x.Sum(x => x.Days60),
+                Days90 = x.Sum(x => x.Days90),
+                Days120 = x.Sum(x => x.Days120),
+                Days150 = x.Sum(x => x.Days150),
+                Days180 = x.Sum(x => x.Days180),
+                Days210 = x.Sum(x => x.Days210),
+                Days240 = x.Sum(x => x.Days240),
+                Days270 = x.Sum(x => x.Days270),
+                Days300 = x.Sum(x => x.Days300),
+                Days330 = x.Sum(x => x.Days330),
+                Days360 = x.Sum(x => x.Days360),
+                total_spending = x.Sum(x => x.total_spending),
+            }).ToList();
+
+
+            foreach (var item in dataf)
+            {
+
+                item.Days7 = item.Days7 / item.user_id;
+                item.Days14 = item.Days14 / item.user_id;
+                item.Days30 = item.Days30 / item.user_id;
+                item.Days60 = item.Days60 / item.user_id;
+                item.Days90 = item.Days90 / item.user_id;
+                item.Days120 = item.Days120 / item.user_id;
+                item.Days150 = item.Days150 / item.user_id;
+                item.Days180 = item.Days180 / item.user_id;
+                item.Days210 = item.Days210 / item.user_id;
+                item.Days240 = item.Days240 / item.user_id;
+                item.Days270 = item.Days270 / item.user_id;
+                item.Days300 = item.Days300 / item.user_id;
+                item.Days330 = item.Days330 / item.user_id;
+                item.Days360 = item.Days360 / item.user_id;
+                item.spending_360 = item.Days360 * item.user_id;
+
+            }
+
+
+            await CsvWriter(dataf, "LTV_Growth_Raw_Same_month_sheet");
+
+            var dfx_samemonth = dataf;
+
+            /////////////////for old_model//////////////////////////////////////////////
+            dataf = orj_dataf;
+
+            dataf = dataf.Where(x => x.DT_tpay_activated_date == x.DT_first_sub_date).ToList();
+
+
+            dataf = dataf.GroupBy(x => new
+            {
+                x.user_id,
+                x.DT_first_sub_date,
+                x.country_code,
+                x.operator_name,
+                x.currency_code,
+                x.period_type,
+            }).Select(x => new SubscriptionRevenue
+            {
+                user_id = x.Key.user_id,
+                DT_first_sub_date = x.Key.DT_first_sub_date,
+                country_code = x.Key.country_code,
+                operator_name = x.Key.operator_name,
+                currency_code = x.Key.currency_code,
+                period_type = x.Key.period_type,
+                Days7 = x.Sum(x => x.Days7),
+                Days14 = x.Sum(x => x.Days14),
+                Days30 = x.Sum(x => x.Days30),
+                Days60 = x.Sum(x => x.Days60),
+                Days90 = x.Sum(x => x.Days90),
+                Days120 = x.Sum(x => x.Days120),
+                Days150 = x.Sum(x => x.Days150),
+                Days180 = x.Sum(x => x.Days180),
+                Days210 = x.Sum(x => x.Days210),
+                Days240 = x.Sum(x => x.Days240),
+                Days270 = x.Sum(x => x.Days270),
+                Days300 = x.Sum(x => x.Days300),
+                Days330 = x.Sum(x => x.Days330),
+                Days360 = x.Sum(x => x.Days360),
+            }).ToList();
+
+
+            lookupUserSpendingList = userSpendingList.ToLookup(p => p.user_id);
+
+
+            foreach (var data in dataf)
+            {
+
+                var UserSpending = lookupUserSpendingList[data.user_id].FirstOrDefault();
+                data.total_spending = UserSpending.total_spending;
+            }
+
+            dataf = dataf.GroupBy(x => new
+            {
+                x.DT_first_sub_date,
+                x.country_code,
+                x.operator_name,
+                x.currency_code,
+                x.period_type,
+            }).Select(x => new SubscriptionRevenue
+            {
+                DT_first_sub_date = x.Key.DT_first_sub_date,
+                country_code = x.Key.country_code,
+                operator_name = x.Key.operator_name,
+                currency_code = x.Key.currency_code,
+                period_type = x.Key.period_type,
+                user_id = x.Count(),
+                Days7 = x.Sum(x => x.Days7),
+                Days14 = x.Sum(x => x.Days14),
+                Days30 = x.Sum(x => x.Days30),
+                Days60 = x.Sum(x => x.Days60),
+                Days90 = x.Sum(x => x.Days90),
+                Days120 = x.Sum(x => x.Days120),
+                Days150 = x.Sum(x => x.Days150),
+                Days180 = x.Sum(x => x.Days180),
+                Days210 = x.Sum(x => x.Days210),
+                Days240 = x.Sum(x => x.Days240),
+                Days270 = x.Sum(x => x.Days270),
+                Days300 = x.Sum(x => x.Days300),
+                Days330 = x.Sum(x => x.Days330),
+                Days360 = x.Sum(x => x.Days360),
+                total_spending = x.Sum(x => x.total_spending),
+            }).ToList();
+
+
+            foreach (var item in dataf)
+            {
+
+                item.Days7 = item.Days7 / item.user_id;
+                item.Days14 = item.Days14 / item.user_id;
+                item.Days30 = item.Days30 / item.user_id;
+                item.Days60 = item.Days60 / item.user_id;
+                item.Days90 = item.Days90 / item.user_id;
+                item.Days120 = item.Days120 / item.user_id;
+                item.Days150 = item.Days150 / item.user_id;
+                item.Days180 = item.Days180 / item.user_id;
+                item.Days210 = item.Days210 / item.user_id;
+                item.Days240 = item.Days240 / item.user_id;
+                item.Days270 = item.Days270 / item.user_id;
+                item.Days300 = item.Days300 / item.user_id;
+                item.Days330 = item.Days330 / item.user_id;
+                item.Days360 = item.Days360 / item.user_id;
+                item.spending_360 = item.Days360 * item.user_id;
+
+            }
+
+
+            await CsvWriter(dataf, "LTV_Growth_Raw_Sheet");
+
+
+            var categoryList = await GetCategories();
+
+            var lookupCategories = categoryList.ToLookup(p => p.CategoryID);
+
+            foreach (var item in dfx_samemonth)
+            {
+                try
+                {
+                    var category = lookupCategories[Int32.Parse(item.first_subscription_subject_id)].FirstOrDefault();
+
+                    if (category != null)
+                    {
+                        try
+                        {
+                            item.CategoryID = category.CategoryID;
+                            item.CategoryName = category.CategoryName;
+                            z++;
+                        }
+                        catch (Exception ex)
+                        {
+                            i++;
+                            if (i >= dfx_samemonth.Count * 0.01)
+                            {
+                                throw ex;
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
+
+
+            }
+
+            foreach (var item in dfx_samemonth)
+            {
+                item.operator_country = item.operator_name.Substring(0, 2).ToUpper();
+            }
+
+
+
+
+
+
+
+        }
+
+
+
         private static async Task<List<Categories>> GetCategories()
         {
             var CsvCategories = await System.IO.File.ReadAllLinesAsync(@"C:\temp\categories.csv");
@@ -440,7 +890,7 @@ namespace LTVGrowth
         public static async Task CsvWriter<T>(List<T> list, string fileName)
         {
             string filePath = fileName + ".csv";
-            var exportPath = Path.Combine(@"C:\temp\Mehan\OutData\", filePath);
+            var exportPath = Path.Combine(@"C:\temp\LTV_Growth\", filePath);
             using (TextWriter writer = new StreamWriter(exportPath, false, System.Text.Encoding.UTF8))
             {
                 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
@@ -595,7 +1045,10 @@ namespace LTVGrowth
         {
             //DateTime yyyyMMdd = new DateTime();
             //yyyyMMdd = DateTime.ParseExact(date, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
-
+            if (date != DateTime.MinValue)
+            {
+                
+            
             string str_date = "";
             int year = date.Year;
             int month = date.Month;
@@ -611,6 +1064,8 @@ namespace LTVGrowth
             monthlyDate = DateTime.ParseExact(str_date, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
 
             return monthlyDate;
+            }
+            return date;
         }
 
 
