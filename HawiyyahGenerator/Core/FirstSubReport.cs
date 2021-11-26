@@ -13,7 +13,7 @@ namespace HawiyyahGenerator.Core
         public string country_code { get; set; }
         public string utm_source_at_subscription { get; set; }
         public string operator_name { get; set; }
-        public string Parked { get; set; }
+        public bool Parked { get; set; }
         public string period_type { get; set; }
         public string Category { get; set; }
         public int user_id { get; set; }

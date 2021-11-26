@@ -47,7 +47,7 @@ namespace AllProjectsLTV
                 jwbsle.country_code = item.country_code;
                 jwbsle.utm_source_at_subscription = item.utm_source_at_subscription;
                 jwbsle.operator_name = item.operator_name;
-                jwbsle.Parked = item.Parked;
+                //jwbsle.Parked = item.Parked;
                 jwbsle.period_type = item.period_type;
                 jwbsle.user_id = item.user_id;
                 jwbsle.usd_amount = item.usd_amount;

@@ -1,0 +1,60 @@
+﻿@model IEnumerable<HawiyyahGenerator.Core.RevenuesLast>
+
+<h1 style="text-align:center">Hawiyyah - Revenues Last All</h1>
+<br />
+
+<div class="container">
+
+    <table class="table table-bordered table-hover">
+        <thead style="background-color:powderblue">
+            <tr>
+                <th>Index_0 </th>
+                <th>Created Date </th>
+                <th>Payment Gateway</th>
+                <th>Country Code </th>
+                <th>UTM Source at Subscription</th>
+                <th>Currency Code</th>
+                <th>Operator Name</th>
+                <th>Parked</th>
+                <th>User ID</th>
+                <th>Currency Amount</th>
+                <th>Index</th>
+                <th>Quotes</th>
+                <th>Payout Percentage</th>
+                <th>Usd Amount</th>
+                <th>Net Usd Amount</th>
+                <th>UTM5</th>
+            </tr>
+        </thead>
+        @foreach (var d in Model)
+        {
+    <tr>
+        <td>@d.index_0</td>
+        <td>@d.created_date</td>
+        <td>@d.payment_gateway</td>
+        <td>@d.country_code</td>
+        <td>@d.utm_source_at_subscription</td>
+        <td>@d.currency_code</td>
+        <td>@d.operator_name</td>,
+        <td>@d.Parked</td>
+        <td>@d.user_id</td>
+        <td>@d.currency_amount</td>
+        <td>@d.index</td>
+        <td>@d.quotes</td>
+        <td>@d.payout_percentage</td>
+        <td>@Math.Round(d.usd_amount, 2)</td>
+        <td>@Math.Round(d.net_usd_amount, 2)</td>
+        <td>@d.UTM5</td>
+    </tr>
+
+        }
+    </table>
+</div>
+
+@section Scripts
+{
+    <script>
+        $('.table').dataTable({
+        });
+    </script>
+}

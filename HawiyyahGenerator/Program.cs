@@ -13,7 +13,7 @@ namespace HawiyyahGenerator
             await Hawiyyah.RevenuesLast();
             var lists = await Hawiyyah.NewLTVSameMonth();
             var lists2 = await Hawiyyah.FirstSubReport(lists);
-            await Hawiyyah.LTVModels(lists2);
+            //await Hawiyyah.LTVModels(lists2);
         }
     }
 }

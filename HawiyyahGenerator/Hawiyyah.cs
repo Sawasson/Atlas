@@ -21,7 +21,7 @@ namespace HawiyyahGenerator
 
         //string[] CPA_TOOL_SETTING_PEOPLEREVEAL = new string[] { "HAWEYYA_CC_ENGLISH" };
 
-        public static async Task RevenuesLast()
+        public static async Task<Tuple<List<RevenuesLast>, List<RevenuesLast>, List<RevenuesLast>>> RevenuesLast()
         {
             var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Hawiyyah\Base\HAWIYYAH-subs-2304771.csv");
             var allSubs = await ParseSubscriptions(AllSubsCSV);
@@ -107,7 +107,7 @@ namespace HawiyyahGenerator
                     {
                         sub.usd_amount = sub.currency_amount / (decimal)currency.quotes;
                         sub.quotes = currency.quotes;
-                        sub.index = currency.index;
+                        sub.Index = currency.index;
                         p++;
                     }
                     catch (Exception)
@@ -229,6 +229,9 @@ namespace HawiyyahGenerator
 
             await CsvWriter (revenuesLast_peopleReveal, "revenuesLast_peopleReveal");
 
+            return Tuple.Create(revenuesLast, revenuesLast_hawiyyahOnly, revenuesLast_peopleReveal);
+
+
         }
 
         public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>>> NewLTVSameMonth()
@@ -272,9 +275,9 @@ namespace HawiyyahGenerator
                 }
             }
 
-            //copy to firstsublist
-            var subReportx = firstSubList;
-            //copy to firstsublist
+            ////copy to firstsublist
+            //var subReportx = firstSubList;
+            ////copy to firstsublist
 
             var counts = firstSubList;
 
@@ -349,11 +352,47 @@ namespace HawiyyahGenerator
                 lang = x.Key.lang,
                 period_type = x.Key.period_type,
                 tpay_activated_date = x.Key.tpay_activated_date,
-                user_id = x.Count(),
+                user_id = x.Sum(x=>x.user_id),
                 currency_amount = x.Sum(x => x.currency_amount),
             }).ToList();
 
-            var dateCountsNewLtv = dateCountsx;
+            List<SubscriptionRevenue> dateCountsNewLtv = new List<SubscriptionRevenue>();
+
+            //Todo: Clonlanacak
+            foreach (var item in dateCountsx)
+            {
+                dateCountsNewLtv.Add(new SubscriptionRevenue
+
+                {
+                    Category = item.Category,
+                    country_code = item.country_code,
+                    created_date = item.created_date,
+                    currency_amount = item.currency_amount,
+                    currency_code = item.currency_code,
+                    first_subscription_subject_id = item.first_subscription_subject_id,
+                    fully_paid = item.fully_paid,
+                    Id = item.Id,
+                    is_demo = item.is_demo,
+                    is_first_sub = item.is_first_sub,
+                    is_last_sub = item.is_last_sub,
+                    model = item.model,
+                    net_usd_amount = item.net_usd_amount,
+                    next_subscription_id = item.next_subscription_id,
+                    operator_name = item.operator_name,
+                    Parked = item.Parked,
+                    payment_gateway = item.payment_gateway,
+                    period_type = item.period_type,
+                    site_lang = item.site_lang,
+                    source = item.source,
+                    subscription_id = item.subscription_id,
+                    tpay_activated_date = item.tpay_activated_date,
+                    usd_amount = item.usd_amount,
+                    user_id = item.user_id,
+                    UTM5 = item.UTM5,
+                    utm_medium_at_subscription = item.utm_medium_at_subscription,
+                    utm_source_at_subscription = item.utm_source_at_subscription,
+                });
+            }
 
             int i = 0;
             int z = 0;
@@ -363,6 +402,10 @@ namespace HawiyyahGenerator
 
             foreach (var item in dateCountsNewLtv)
             {
+
+                item.tpay_activated_date = DatetimeMonthlyParse(item.tpay_activated_date);
+                item.created_date = DatetimeMonthlyParse(item.created_date);
+
                 var currency = lookupCurrency[item.currency_code].FirstOrDefault();
 
                 var payout = lookupPayouts[item.operator_name].FirstOrDefault();
@@ -393,46 +436,43 @@ namespace HawiyyahGenerator
 
                 item.source = Checkers.CategoryChecker(item.utm_source_at_subscription);
 
-                item.tpay_activated_date = item.created_date;
 
             }
 
-            var dateCountsNewLtv_ = dateCountsNewLtv.GroupBy(x => new
+            dateCountsNewLtv = dateCountsNewLtv.Where(x => x.tpay_activated_date == x.created_date).ToList();
+
+
+            dateCountsNewLtv = dateCountsNewLtv.GroupBy(x => new
             {
-                x.domain,
                 x.created_date,
                 x.country_code,
                 x.utm_source_at_subscription,
                 x.operator_name,
                 x.Parked,
                 x.period_type,
-            }).Select(x => new NewLTVSameMonth
+            }).Select(x => new SubscriptionRevenue
             {
-                domain = x.Key.domain,
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
                 utm_source_at_subscription = x.Key.utm_source_at_subscription,
                 operator_name = x.Key.operator_name,
-                Parked = ParseParkedDaysToString(x.Key.Parked),
+                Parked = x.Key.Parked,
                 period_type = x.Key.period_type,
-                user_id = x.Count(),
+                user_id = x.Sum(x=>x.user_id),
                 usd_amount = x.Sum(x => x.usd_amount),
                 net_usd_amount = x.Sum(x => x.net_usd_amount),
             }).ToList();
 
-            foreach (var item in dateCountsNewLtv_)
+            int index = 0;
+            foreach (var item in dateCountsNewLtv)
             {
                 item.Category = Checkers.CategoryChecker(item.utm_source_at_subscription);
-            }
-
-            int index = 0;
-            foreach (var item in dateCountsNewLtv_)
-            {
+                item.model = "SAMEMONTH";
                 item.index = index;
                 index++;
             }
 
-            await CsvWriter(dateCountsNewLtv_, "New_LTV_SAMEMONTH");
+            //await CsvWriter(dateCountsNewLtv, "New_LTV_SAMEMONTH");
 
             return Tuple.Create(dateCountsNewLtv, dateCountsx);
         }
@@ -509,7 +549,7 @@ namespace HawiyyahGenerator
 
         }
 
-        public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>>> FirstSubReport(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
+        public static async Task<Tuple<List<FirstSubReport>, List<FirstSubReport>, List<FirstSubReport>>> FirstSubReport(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
         {
 
             var PayoutsCSV = System.IO.File.ReadAllLines(@"C:\temp\operator_payouts.csv");
@@ -523,11 +563,6 @@ namespace HawiyyahGenerator
             var dateCountsNewLtv = lists.Item1;
 
             var dateCountsx2 = lists.Item2;
-
-            foreach (var item in dateCountsNewLtv)
-            {
-                item.model = "SAMEMONTH";
-            }
 
             var lookupCurrency = currencyList.ToLookup(p => p.currency_code);
 
@@ -590,7 +625,7 @@ namespace HawiyyahGenerator
                 Parked = x.Key.Parked,
                 period_type = x.Key.period_type,
                 Category = x.Key.Category,
-                user_id = x.Count(),
+                user_id = x.Sum(x=>x.user_id),
                 usd_amount = x.Sum(x => x.usd_amount),
                 net_usd_amount = x.Sum(x => x.net_usd_amount),
             }).ToList();
@@ -610,7 +645,7 @@ namespace HawiyyahGenerator
                 firstSubReport.country_code = item.country_code;
                 firstSubReport.utm_source_at_subscription = item.utm_source_at_subscription;
                 firstSubReport.operator_name = item.operator_name;
-                firstSubReport.Parked = ParseParkedDaysToString(item.Parked);
+                firstSubReport.Parked = item.Parked;
                 firstSubReport.period_type = item.period_type;
                 firstSubReport.Category = item.Category;
                 firstSubReport.user_id = item.user_id;
@@ -638,7 +673,7 @@ namespace HawiyyahGenerator
                 firstSubReport.country_code = item.country_code;
                 firstSubReport.utm_source_at_subscription = item.utm_source_at_subscription;
                 firstSubReport.operator_name = item.operator_name;
-                firstSubReport.Parked = ParseParkedDaysToString(item.Parked);
+                firstSubReport.Parked = item.Parked;
                 firstSubReport.period_type = item.period_type;
                 firstSubReport.Category = item.Category;
                 firstSubReport.user_id = item.user_id;
@@ -665,7 +700,7 @@ namespace HawiyyahGenerator
                 firstSubReport.country_code = item.country_code;
                 firstSubReport.utm_source_at_subscription = item.utm_source_at_subscription;
                 firstSubReport.operator_name = item.operator_name;
-                firstSubReport.Parked = ParseParkedDaysToString(item.Parked);
+                firstSubReport.Parked = item.Parked;
                 firstSubReport.period_type = item.period_type;
                 firstSubReport.Category = item.Category;
                 firstSubReport.user_id = item.user_id;
@@ -680,7 +715,7 @@ namespace HawiyyahGenerator
             await CsvWriter(firstSubReportList_PeopleReveal, "first_sub_report_peopleReveal");
 
 
-            return Tuple.Create(dateCountsNewLtv, dateCountsx2);
+            return Tuple.Create(firstSubReportList, firstSubReportList_Hawiyyah,firstSubReportList_PeopleReveal);
 
 
         }
@@ -943,6 +978,34 @@ namespace HawiyyahGenerator
 
             return str.Substring(minLenght, Math.Min(str.Length, maxLength));
         }
+
+        public static string DatetimeMonthlyParse(string date)
+        {
+            try
+            {
+                DateTime yyyyMMdd = new DateTime();
+                yyyyMMdd = DateTime.ParseExact(date, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                int year = yyyyMMdd.Year;
+                int month = yyyyMMdd.Month;
+                if (month < 10)
+                {
+                    date = year.ToString() + "-0" + month.ToString() + "-01";
+                }
+                else
+                {
+                    date = year.ToString() + "-" + month.ToString() + "-01";
+                }
+
+                return date;
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+
+        }
+
 
     }
 }

@@ -18,7 +18,7 @@ namespace HawiyyahGenerator.Core
         public bool Parked { get; set; }
         public int user_id { get; set; }
         public decimal currency_amount { get; set; }
-        public string index { get; set; }
+        public int index { get; set; }
         public double quotes { get; set; }
         public string payout_percentage { get; set; }
         public decimal usd_amount { get; set; }
