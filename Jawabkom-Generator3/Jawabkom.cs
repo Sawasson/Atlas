@@ -36,8 +36,15 @@ namespace Jawabkom_Generator3
             return allSubs;
         }
 
+        public static async Task<List<Currency>> RawCurrency()
+        {
+            var currencyList = await CurrencyExport();
+            return currencyList;
 
-        public static async Task RawRevenuesLastMonthly()
+        }
+
+
+        public static async Task<List<RawRevenuesLastMonthly>> RawRevenuesLastMonthly()
 
         {
             var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\users_subscriptions.csv");
@@ -65,7 +72,6 @@ namespace Jawabkom_Generator3
             //var currencyList = await CurrencyExport();
 
 
-            //await MongoHelper.AddMany(allOps);
 
             var revenue = allSubs;
 
@@ -73,7 +79,11 @@ namespace Jawabkom_Generator3
             foreach (var item in revenue)
             {
                 item.Parked = ParseParkedDays(item.created_date, item.tpay_activated_date, false);
+
+
             }
+            var xx = revenue.Where(x => x.Parked == false).ToList();
+            var yy = revenue.Where(x => x.Parked == true).ToList();
 
             revenue = revenue.GroupBy(x => new
             {
@@ -188,7 +198,7 @@ namespace Jawabkom_Generator3
             List<RawRevenuesLastMonthly> list = new List<RawRevenuesLastMonthly>();
 
             int k = 0;
-            foreach (var item in allSubs)
+            foreach (var item in revenue)
             {
                 RawRevenuesLastMonthly rawRevenuesLastMonthly = new RawRevenuesLastMonthly();
                 rawRevenuesLastMonthly.index = k;
@@ -207,9 +217,12 @@ namespace Jawabkom_Generator3
 
             }
 
-            await CsvWriter(list, "RawRevenuesLastMonthly");
+            //await CsvWriter(list, "RawRevenuesLastMonthly");
+
+            //await MongoHelper.AddMany(list);
 
 
+            return list;
 
         }
 
@@ -312,8 +325,51 @@ namespace Jawabkom_Generator3
                 dateCountsNewLtv.Add(new SubscriptionRevenue 
                 
                 { 
-                
-                
+                Apps=item.Apps,
+                Apps2=item.Apps2,
+                Category = item.Category,
+                Channel = item.Channel,
+                country2 = item.country2,
+                country_code = item.country_code,
+                created_date = item.created_date,
+                currency_amount = item.currency_amount,
+                currency_code = item.currency_code,
+                first_subscription_subject_id = item.first_subscription_subject_id,
+                fully_paid = item.fully_paid,
+                Google = item.Google,
+                Id = item.Id,
+                index = item.index,
+                IsMatched = item.IsMatched,
+                is_demo = item.is_demo,
+                is_first_sub = item.is_first_sub,
+                is_last_sub = item.is_last_sub,
+                Language = item.Language,
+                model = item.model,
+                net_usd_amount = item.net_usd_amount,
+                next_subscription_id = item.next_subscription_id,
+                operator2 = item.operator2,
+                operator_name = item.operator_name,
+                Parked = item.Parked,
+                payment_gateway = item.payment_gateway,
+                period_type = item.period_type,
+                postquare = item.postquare,
+                Project = item.Project,
+                quotes = item.quotes,
+                site_lang = item.site_lang,
+                source = item.source,
+                subscription_id = item.subscription_id,
+                taboola = item.taboola,
+                tpay_activated_date = item.tpay_activated_date,
+                unique_id = item.unique_id,
+                usd_amount = item.usd_amount,
+                User = item.User,
+                user_id = item.user_id,
+                UTM5 = item.UTM5,
+                UTM7 = item.UTM7,
+                utm_medium_at_activation = item.utm_medium_at_activation,
+                utm_medium_at_subscription = item.utm_medium_at_subscription,
+                utm_source_at_activation = item.utm_source_at_activation,
+                utm_source_at_subscription = item.utm_source_at_subscription,
                 });
             }
 
@@ -366,14 +422,6 @@ namespace Jawabkom_Generator3
 
             dateCountsNewLtv = dateCountsNewLtv.Where(x => x.tpay_activated_date == x.created_date).ToList();
 
-            //foreach (var item in dateCountsNewLtv)
-            //{
-            //    item.created_date = DatetimeMonthlyParse(item.created_date);
-            //    if (item.tpay_activated_date==null)
-            //    {
-            //        item.tpay_activated_date = item.created_date;
-            //    }
-            //}
 
             var dateCountsNewLtv_ = dateCountsNewLtv.GroupBy(x => new
             {
@@ -416,7 +464,7 @@ namespace Jawabkom_Generator3
 
         }
 
-        public static async Task RawFinalReportMonthly(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
+        public static async Task<List<RawFinalReportMonthly>> RawFinalReportMonthly(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
         {
 
 
@@ -483,13 +531,21 @@ namespace Jawabkom_Generator3
                 item.Google = Checkers.GoogleChecker(item.utm_source_at_subscription);
                 item.Apps = Checkers.AppsChecker(item.Category);
                 item.Apps2 = Checkers.AppsChecker(item.Category);
-                item.operator2 = TruncateLongString(item.country_code, 0, 2) + "-";
+                try
+                {
+                    item.operator2 = TruncateLongString(item.country_code, 0, 2) + "-" + item.operator_name.Substring(3);
+
+                }
+                catch (Exception)
+                {
+                }
                 item.country2 = TruncateLongString(item.country_code, 0, 2);
                 item.taboola = Checkers.TaboolaChecker(item.utm_source_at_subscription);
                 item.postquare = Checkers.PostquareChecker(item.utm_source_at_subscription);
 
 
             }
+
 
             foreach (var item in dateCountsx2)
             {
@@ -547,6 +603,7 @@ namespace Jawabkom_Generator3
 
             await CsvWriter(RawFinalReportMonthlyList, "Raw_Final_Report_Monthly");
 
+            return RawFinalReportMonthlyList;
 
         }
 
@@ -622,7 +679,7 @@ namespace Jawabkom_Generator3
         }
 
 
-        public static async Task DailyCost()
+        public static async Task<List<RawDailyCost>> DailyCost()
         {
             var DailyCostCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\DailyCost-csv");
 
@@ -671,10 +728,10 @@ namespace Jawabkom_Generator3
             await CsvWriter(dailyCostGroup, "daily_cost");
 
             //Todo:Savaş datetime çözülecek
-            //foreach (var item in dailyCostGroup)
-            //{
-            //    item.created_date = DatetimeMonthlyParse(item.created_date);
-            //}
+            foreach (var item in dailyCostGroup)
+            {
+                item.created_date = DatetimeMonthlyParse2(item.created_date);
+            }
 
             dailyCostGroup = dailyCostGroup.GroupBy(x => new
             {
@@ -693,11 +750,11 @@ namespace Jawabkom_Generator3
 
             await CsvWriter(dailyCostGroup, "Raw_daily_cost");
 
-
+            return dailyCostGroup;
 
         }
 
-        public static async Task RawMonthlyClicks()
+        public static async Task<List<RawMonthlyClicks>> RawMonthlyClicks()
         {
 
             var DailyCostCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\DailyCost-csv");
@@ -717,11 +774,6 @@ namespace Jawabkom_Generator3
             dailyCost = dailyCost.Concat(dailyCostOld).ToList();
 
             dailyCost = dailyCost.Where(x => x.Dom == "JAWAB" || x.Dom == "JAWABENGLISH" || x.Dom == "JAWABFRENCH").ToList();
-
-            foreach (var item in dailyCost)
-            {
-                item.TotalCost = item.SearchCost + item.GDNCost;
-            }
 
 
             var dailyclicksGroup = dailyCost.GroupBy(x => new
@@ -744,6 +796,11 @@ namespace Jawabkom_Generator3
             await CsvWriter(dailyclicksGroup, "daily_clicks");
 
 
+            foreach (var item in dailyclicksGroup)
+            {
+                item.created_date = DatetimeMonthlyParse2(item.created_date);
+            }
+
             dailyclicksGroup = dailyclicksGroup.GroupBy(x => new
             {
                 x.created_date,
@@ -760,6 +817,8 @@ namespace Jawabkom_Generator3
             await CsvWriter(dailyclicksGroup, "daily_clicks_monthly");
 
             await CsvWriter(dailyclicksGroup, "Raw_monthly_clicks");
+
+            return dailyclicksGroup;
 
         }
 
@@ -1082,6 +1141,32 @@ namespace Jawabkom_Generator3
 
         }
 
+        public static DateTime DatetimeMonthlyParse2(DateTime date)
+        {
+            //DateTime yyyyMMdd = new DateTime();
+            //yyyyMMdd = DateTime.ParseExact(date, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+            if (date != DateTime.MinValue)
+            {
+
+
+                string str_date = "";
+                int year = date.Year;
+                int month = date.Month;
+                if (month < 10)
+                {
+                    str_date = year.ToString() + "-0" + month.ToString() + "-01";
+                }
+                else
+                {
+                    str_date = year.ToString() + "-" + month.ToString() + "-01";
+                }
+                DateTime monthlyDate = new DateTime();
+                monthlyDate = DateTime.ParseExact(str_date, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+
+                return monthlyDate;
+            }
+            return date;
+        }
 
 
 

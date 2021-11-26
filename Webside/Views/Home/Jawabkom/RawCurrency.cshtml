@@ -1,0 +1,48 @@
+﻿@model IEnumerable<Jawabkom_Generator3.Core.Currency>
+
+<div class="container">
+
+    <table class="table table-bordered table-hover">
+        <thead style="background-color:powderblue">
+            <tr>
+                <th></th>
+                <th>Index </th>
+                <th>Quotes</th>
+                <th>Currency Code </th>
+            </tr>
+        </thead>
+        @{ int i = 0;}
+        @foreach (var d in Model)
+        {
+            <tr>
+                <th>@i</th>
+                @{i++;}
+                <td>@d.index</td>
+                <td>@d.quotes</td>
+                <td>@d.currency_code</td>
+                @*<td>@d.operator_name</td>
+                    <td>@d.Parked</td>
+                    <td>@d.period_type</td>
+                    <td>
+                        @if (d.Category == "Facebook")
+                        {
+                            <a><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Facebook_icon.jpg" width="20" height="20" title="White flower" alt="Flower"></a>
+                        }@d.Category
+                    </td>
+                    <td>@Math.Round(d.currency_amount, 2)</td>
+                    <td>@Math.Round(d.usd_amount, 2)</td>
+                    <td>@Math.Round(d.net_usd_amount, 2)</td>*@
+
+            </tr>
+
+        }
+    </table>
+</div>
+
+@section Scripts
+{
+    <script>
+        $('.table').dataTable({
+        });
+    </script>
+}

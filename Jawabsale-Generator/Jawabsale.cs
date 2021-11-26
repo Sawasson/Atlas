@@ -27,7 +27,7 @@ namespace Jawabsale_Generator
 
 
 
-        public static async Task RevenuesLast()
+        public static async Task<List<RevenuesLast>> RevenuesLast()
         {
             var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Jawabsale\Base\SALE-subs-55419400.csv");
 
@@ -43,25 +43,28 @@ namespace Jawabsale_Generator
 
             var revenue = allSubs;
 
-            //Unıque List
-            var uniques = UniqueItems(revenue);
+            ////Unıque List
+            //var uniques = UniqueItems(revenue);
 
             foreach (var item in revenue)
             {
-                item.Parked = ParseParkedDays(item.created_date, item.tpay_activated_date);
-
-            }
-
-            //Unıque List
-            uniques = UniqueItems(revenue);
-
-            foreach (var item in revenue)
-            {
-                if (item.operator_name==null)
+                item.Parked = ParseParkedDaysTrueFalse(item.created_date, item.tpay_activated_date);
+                if (item.operator_name == null)
                 {
                     item.operator_name = "NoOperator";
                 }
             }
+
+            //Unıque List
+            //uniques = UniqueItems(revenue);
+
+            //foreach (var item in revenue)
+            //{
+            //    if (item.operator_name==null)
+            //    {
+            //        item.operator_name = "NoOperator";
+            //    }
+            //}
 
             revenue = revenue.GroupBy(x => new
             {
@@ -81,13 +84,12 @@ namespace Jawabsale_Generator
                 currency_code = x.Key.currency_code,
                 operator_name = x.Key.operator_name,
                 Parked = x.Key.Parked,
-                //user_id = x.GroupBy(c => c.user_id).Where(grp => grp.Count() > 1).Select(grp => grp.Key).Sum(),
                 user_id = x.GroupBy(x => x.user_id).Count(),
                 currency_amount = x.Sum(x => x.currency_amount),
             }).ToList();
 
-            //Unıque List
-            uniques = UniqueItems(revenue);
+            ////Unıque List
+            //uniques = UniqueItems(revenue);
 
             lookupCurrency = currencyList.ToLookup(p => p.currency_code);
             lookupPayouts = allPayouts.ToLookup(p => p.operator_name);
@@ -131,10 +133,10 @@ namespace Jawabsale_Generator
 
             }
 
-            uniques = UniqueItems(revenue);
+            //uniques = UniqueItems(revenue);
 
 
-            await CsvWriter(revenue, "revenues_last");
+            //await CsvWriter(revenue, "revenues_last");
 
             revenue = revenue.GroupBy(x => new
             {
@@ -168,12 +170,14 @@ namespace Jawabsale_Generator
 
             //Send Google Sheets to revenuesLast
 
-            await CsvWriter(revenuesLast, "RevenuesLast");
+            //await CsvWriter(revenuesLast, "RevenuesLast");
+
+            return revenuesLast;
 
 
         }
 
-        public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>>> NewLTVSameMonth()
+        public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>, List<SubscriptionRevenue>>> NewLTVSameMonth()
         {
 
             var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Jawabsale\Base\SALE-subs-55419400.csv");
@@ -201,7 +205,7 @@ namespace Jawabsale_Generator
 
             foreach (var sub in firstSubList)
             {
-                sub.Parked = ParseParkedDays(sub.tpay_activated_date, sub.created_date);
+                sub.Parked = ParseParkedDaysTrueFalse(sub.tpay_activated_date, sub.created_date);
 
 
                 if (string.IsNullOrEmpty(sub.operator_name))
@@ -211,7 +215,45 @@ namespace Jawabsale_Generator
             }
 
             //copy to firstsublist
-            var subReportx = firstSubList;
+
+            List<SubscriptionRevenue> subReportx = new List<SubscriptionRevenue>();
+
+            //var subReportx = firstSubList;
+            foreach (var item in firstSubList)
+            {
+                subReportx.Add(new SubscriptionRevenue
+
+                {
+                    Category = item.Category,
+                    country_code = item.country_code,
+                    created_date = item.created_date,
+                    currency_amount = item.currency_amount,
+                    currency_code = item.currency_code,
+                    first_subscription_subject_id = item.first_subscription_subject_id,
+                    fully_paid = item.fully_paid,
+                    Id = item.Id,
+                    is_demo = item.is_demo,
+                    is_first_sub = item.is_first_sub,
+                    is_last_sub = item.is_last_sub,
+                    model = item.model,
+                    net_usd_amount = item.net_usd_amount,
+                    next_subscription_id = item.next_subscription_id,
+                    operator_name = item.operator_name,
+                    Parked = item.Parked,
+                    payment_gateway = item.payment_gateway,
+                    period_type = item.period_type,
+                    site_lang = item.site_lang,
+                    source = item.source,
+                    subscription_id = item.subscription_id,
+                    tpay_activated_date = item.tpay_activated_date,
+                    usd_amount = item.usd_amount,
+                    user_id = item.user_id,
+                    UTM5 = item.UTM5,
+                    utm_medium_at_subscription = item.utm_medium_at_subscription,
+                    utm_source_at_subscription = item.utm_source_at_subscription,
+                });
+            }
+
             //copy to firstsublist
 
             var counts = firstSubList;
@@ -283,20 +325,64 @@ namespace Jawabsale_Generator
                 lang = x.Key.lang,
                 period_type = x.Key.period_type,
                 tpay_activated_date = x.Key.tpay_activated_date,
-                user_id = x.Count(),
+                user_id = x.Sum(x => x.user_id),
                 currency_amount = x.Sum(x => x.currency_amount),
             }).ToList();
 
-            var dateCountsNewLtv = dateCountsx;
+            List<SubscriptionRevenue> dateCountsNewLtv = new List<SubscriptionRevenue>();
+
+            //Todo: Clonlanacak
+            foreach (var item in dateCountsx)
+            {
+                dateCountsNewLtv.Add(new SubscriptionRevenue
+
+                {
+                    Category = item.Category,
+                    country_code = item.country_code,
+                    created_date = item.created_date,
+                    currency_amount = item.currency_amount,
+                    currency_code = item.currency_code,
+                    first_subscription_subject_id = item.first_subscription_subject_id,
+                    fully_paid = item.fully_paid,
+                    Id = item.Id,
+                    is_demo = item.is_demo,
+                    is_first_sub = item.is_first_sub,
+                    is_last_sub = item.is_last_sub,
+                    model = item.model,
+                    net_usd_amount = item.net_usd_amount,
+                    next_subscription_id = item.next_subscription_id,
+                    operator_name = item.operator_name,
+                    Parked = item.Parked,
+                    payment_gateway = item.payment_gateway,
+                    period_type = item.period_type,
+                    site_lang = item.site_lang,
+                    source = item.source,
+                    subscription_id = item.subscription_id,              
+                    tpay_activated_date = item.tpay_activated_date,
+                    usd_amount = item.usd_amount,
+                    user_id = item.user_id,
+                    UTM5 = item.UTM5,
+                    utm_medium_at_subscription = item.utm_medium_at_subscription,
+                    utm_source_at_subscription = item.utm_source_at_subscription,
+                });
+            }
+
+
 
             int i = 0;
             int z = 0;
+
+
 
             lookupCurrency = currencyList.ToLookup(p => p.currency_code);
             lookupPayouts = allPayouts.ToLookup(p => p.operator_name);
 
             foreach (var item in dateCountsNewLtv)
             {
+                item.tpay_activated_date = DatetimeMonthlyParse(item.tpay_activated_date);
+                item.created_date = DatetimeMonthlyParse(item.created_date);
+
+
                 var currency = lookupCurrency[item.currency_code].FirstOrDefault();
 
                 var payout = lookupPayouts[item.operator_name].FirstOrDefault();
@@ -327,11 +413,12 @@ namespace Jawabsale_Generator
 
                 item.source = Checkers.CategoryChecker(item.utm_source_at_subscription);
 
-                item.tpay_activated_date = item.created_date;
-
             }
 
-            var dateCountsNewLtv_ = dateCountsNewLtv.GroupBy(x => new
+            dateCountsNewLtv = dateCountsNewLtv.Where(x => x.tpay_activated_date == x.created_date).ToList();
+
+
+            dateCountsNewLtv = dateCountsNewLtv.GroupBy(x => new
             {
                 x.created_date,
                 x.country_code,
@@ -339,7 +426,7 @@ namespace Jawabsale_Generator
                 x.operator_name,
                 x.Parked,
                 x.period_type,
-            }).Select(x => new NewLTVSameMonth
+            }).Select(x => new SubscriptionRevenue
             {
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
@@ -347,30 +434,28 @@ namespace Jawabsale_Generator
                 operator_name = x.Key.operator_name,
                 Parked = x.Key.Parked,
                 period_type = x.Key.period_type,
-                user_id = x.Count(),
+                user_id = x.Sum(x => x.user_id),
                 usd_amount = x.Sum(x => x.usd_amount),
                 net_usd_amount = x.Sum(x => x.net_usd_amount),
             }).ToList();
 
-            foreach (var item in dateCountsNewLtv_)
+            int index = 0;
+            foreach (var item in dateCountsNewLtv)
             {
                 item.Category = Checkers.CategoryChecker(item.utm_source_at_subscription);
-            }
-
-            int index = 0;
-            foreach (var item in dateCountsNewLtv_)
-            {
+                item.model = "SAMEMONTH";
                 item.index = index;
                 index++;
             }
 
-            await CsvWriter(dateCountsNewLtv_, "New_LTV_SAMEMONTH");
 
-            return Tuple.Create(dateCountsNewLtv, dateCountsx);
+            //await CsvWriter(dateCountsNewLtv_, "New_LTV_SAMEMONTH");
+
+            return Tuple.Create(dateCountsNewLtv, dateCountsx, subReportx);
         }
 
 
-        public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>>> FirstSubReport(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
+        public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>, List<SubscriptionRevenue>>> FirstSubReport(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
         {
 
             var PayoutsCSV = System.IO.File.ReadAllLines(@"C:\temp\Jawabsale\Base\OperatorPayouts-Jawabsale.csv");
@@ -385,10 +470,12 @@ namespace Jawabsale_Generator
 
             var dateCountsx2 = lists.Item2;
 
-            foreach (var item in dateCountsNewLtv)
-            {
-                item.model = "SAMEMONTH";
-            }
+            var subReportx = lists.Item3;
+
+            //foreach (var item in dateCountsNewLtv)
+            //{
+            //    item.model = "SAMEMONTH";
+            //}
 
             var lookupCurrency = currencyList.ToLookup(p => p.currency_code);
 
@@ -449,44 +536,44 @@ namespace Jawabsale_Generator
                 Parked = x.Key.Parked,
                 period_type = x.Key.period_type,
                 Category = x.Key.Category,
-                user_id = x.Count(),
+                user_id = x.Sum(x=>x.user_id),
                 usd_amount = x.Sum(x => x.usd_amount),
                 net_usd_amount = x.Sum(x => x.net_usd_amount),
             }).ToList();
 
-            List<FirstSubReport> firstSubReportList = new List<FirstSubReport>();
+            //List<FirstSubReport> firstSubReportList = new List<FirstSubReport>();
 
-            int f = 0;
-            foreach (var item in dateCountsx2)
-            {
-                FirstSubReport firstSubReport = new FirstSubReport();
-                firstSubReport.index = f;
-                f++;
-                firstSubReport.created_date = item.created_date;
-                firstSubReport.country_code = item.country_code;
-                firstSubReport.utm_source_at_subscription = item.utm_source_at_subscription;
-                firstSubReport.operator_name = item.operator_name;
-                firstSubReport.Parked = item.Parked;
-                firstSubReport.period_type = item.period_type;
-                firstSubReport.Category = item.Category;
-                firstSubReport.user_id = item.user_id;
-                firstSubReport.usd_amount = item.usd_amount;
-                firstSubReport.net_usd_amount = item.net_usd_amount;
-                firstSubReportList.Add(firstSubReport);
-
-
-            }
+            //int f = 0;
+            //foreach (var item in dateCountsx2)
+            //{
+            //    FirstSubReport firstSubReport = new FirstSubReport();
+            //    firstSubReport.index = f;
+            //    f++;
+            //    firstSubReport.created_date = item.created_date;
+            //    firstSubReport.country_code = item.country_code;
+            //    firstSubReport.utm_source_at_subscription = item.utm_source_at_subscription;
+            //    firstSubReport.operator_name = item.operator_name;
+            //    firstSubReport.Parked = item.Parked;
+            //    firstSubReport.period_type = item.period_type;
+            //    firstSubReport.Category = item.Category;
+            //    firstSubReport.user_id = item.user_id;
+            //    firstSubReport.usd_amount = item.usd_amount;
+            //    firstSubReport.net_usd_amount = item.net_usd_amount;
+            //    firstSubReportList.Add(firstSubReport);
 
 
-            await CsvWriter(firstSubReportList, "first_sub_report");
+            //}
 
-            return Tuple.Create(dateCountsNewLtv, dateCountsx2);
+
+            await CsvWriter(dateCountsx2, "first_sub_report");
+
+            return Tuple.Create(dateCountsNewLtv, dateCountsx2, subReportx);
 
 
         }
 
 
-        public static async Task<List<LTVModels>> LTVModels(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists2)
+        public static async Task<List<LTVModels>> LTVModels(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists2)
         {
 
             List<LTVModels> lTVModels = new List<LTVModels>();
@@ -494,6 +581,9 @@ namespace Jawabsale_Generator
             var dateCountsNewLtv = lists2.Item1;
 
             var dateCountsx2 = lists2.Item2;
+
+            var subReportx = lists2.Item3;
+
 
             //foreach (var item in dateCountsx2)
             //{
@@ -553,49 +643,75 @@ namespace Jawabsale_Generator
 
         }
 
-        private static string ParseParkedDays(string date1, string date2)
+        private static string ParseParkedDays01(string date1, string date2)
         {
 
+                try
+                {
+                    if (date1 == date2)
+                    {
+                        return "0";
+                    }
+                    else
+                    {
+                        return "1";
+                    }
+                }
+                catch (Exception)
+                {
+
+                    return "0";
+                }
+            }
+
+        private static string ParseParkedDaysNotParked(string date1, string date2)
+        {
+                try
+                {
+                    if (date1 == date2)
+                    {
+                        return "Not Parked";
+                    }
+                    else
+                    {
+                        return "Parked";
+                    }
+                }
+                catch (Exception)
+                {
+
+                    return "Not Parked";
+                }
+            }
+
+        private static bool ParseParkedDaysTrueFalse(string date1, string date2)
+        {
             try
             {
                 if (date1 == date2)
                 {
-                    return "0";
+                    return false;
                 }
                 else
                 {
-                    return "1";
+                    return true;
                 }
             }
             catch (Exception)
             {
 
-                return "0";
+                return false;
             }
 
-
-            //if (build == false)
-            //{
-            //    try
-            //    {
-            //        if (date1 == date2)
-            //        {
-            //            return "Parked";
-            //        }
-            //        else
-            //        {
-            //            return "Not Parked";
-            //        }
-            //    }
-            //    catch (Exception)
-            //    {
-
-            //        return "Parked";
-            //    }
-            //}
-
-
         }
+    
+
+
+            
+
+
+
+        
 
         public static List<string> UniqueItems(IEnumerable<SubscriptionRevenue> list)
         {
@@ -771,6 +887,34 @@ namespace Jawabsale_Generator
             }
 
         }
+
+        public static string DatetimeMonthlyParse(string date)
+        {
+            try
+            {
+                DateTime yyyyMMdd = new DateTime();
+                yyyyMMdd = DateTime.ParseExact(date, "dd-MM-yy", System.Globalization.CultureInfo.InvariantCulture);
+                int year = yyyyMMdd.Year;
+                int month = yyyyMMdd.Month;
+                if (month < 10)
+                {
+                    date = year.ToString() + "-0" + month.ToString() + "-01";
+                }
+                else
+                {
+                    date = year.ToString() + "-" + month.ToString() + "-01";
+                }
+
+                return date;
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+
+        }
+
 
     }
 }

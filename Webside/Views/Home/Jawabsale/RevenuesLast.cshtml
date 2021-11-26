@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Jawabsale_Generator.Core.RevenuesLast>
+
+<h1 style="text-align:center">Jawabsale - Revenues Last</h1>
+<br />
+
+<div class="container">
+
+    <table class="table table-bordered table-hover">
+        <thead style="background-color:powderblue">
+            <tr>
+                <th>Index </th>
+                <th>Created Date </th>
+                <th>Country Code </th>
+                <th>Operator Name</th>
+                <th>Usd Amount</th>
+                <th>Net Usd Amount</th>
+            </tr>
+        </thead>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.index</td>
+                <td>@d.created_date</td>
+                <td>@d.country_code</td>
+                <td>@d.operator_name</td>
+                <td>@Math.Round(d.usd_amount, 2)</td>
+                <td>@Math.Round(d.net_usd_amount, 2)</td>
+            </tr>
+
+        }
+    </table>
+</div>
+
+@section Scripts
+{
+    <script>
+        $('.table').dataTable({
+        });
+    </script>
+}

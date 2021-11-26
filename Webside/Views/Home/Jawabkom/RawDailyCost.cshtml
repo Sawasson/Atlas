@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Jawabkom_Generator3.Core.RawDailyCost>
+
+<h1 style="text-align:center">Jawabkom - Raw Daily Cost</h1>
+<br />
+
+<div class="container">
+
+    <table class="table table-bordered table-hover">
+        <thead style="background-color:powderblue">
+            <tr>
+                <th>Created Date </th>
+                <th>Country Code </th>
+                <th>Search Cost</th>
+                <th>GDN Cost</th>
+                <th>Total Cost</th>
+            </tr>
+        </thead>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.created_date</td>
+                <td>@d.country_code</td>
+                <td>@Math.Round(d.SearchCost, 2)</td>
+                <td>@Math.Round(d.GDNCost, 2)</td>
+                <td>@Math.Round(d.TotalCost, 2)</td>
+
+            </tr>
+
+        }
+    </table>
+</div>
+
+@section Scripts
+{
+    <script>
+        $('.table').dataTable({
+        });
+    </script>
+}

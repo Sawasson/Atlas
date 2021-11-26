@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Jawabkom_Generator3.Core.RawRevenuesLastMonthly>
+
+<h1 style="text-align:center">Jawabkom - Raw Revenues Last Monthly</h1>
+<br />
+
+<div class="container">
+
+    <table class="table table-bordered table-hover">
+        <thead style="background-color:powderblue">
+            <tr>
+                <th>Index</th>
+                <th>Created Date </th>
+                <th>Country Code </th>
+                <th>Operator Name</th>
+                <th>Parked</th>
+                <th>Period Type</th>
+                <th>Category</th>
+                <th>Currency Amount</th>
+                <th>Usd Amount</th>
+                <th>Net Usd Amount</th>
+            </tr>
+        </thead>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.index</td>
+                <td>@d.created_date</td>
+                <td>@d.country_code</td>
+                <td>@d.operator_name</td>
+                <td>@d.Parked</td>
+                <td>@d.period_type</td>
+                <td>
+                    @if (d.Category == "Facebook")
+                    {
+                        <a><img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Facebook_icon.jpg" width="20" height="20" title="White flower" alt="Flower"></a>
+                    }@d.Category
+                </td>
+                <td>@Math.Round(d.currency_amount, 2)</td>
+                <td>@Math.Round(d.usd_amount, 2)</td>
+                <td>@Math.Round(d.net_usd_amount, 2)</td>
+
+            </tr>
+
+        }
+    </table>
+</div>
+
+@section Scripts
+{
+    <script>
+        $('.table').dataTable({
+        });
+    </script>
+}

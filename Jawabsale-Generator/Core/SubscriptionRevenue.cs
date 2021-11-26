@@ -45,7 +45,8 @@ namespace Jawabsale_Generator.Core
         public string subscription_log_type { get; set; }
         public int tpay_operator_detail_id { get; set; }
 
-        public string Parked { get; set; }
+        public bool Parked { get; set; }
+        public string ParkedString { get; set; }
         public decimal usd_amount { get; set; }
         public decimal net_usd_amount { get; set; }
         public string UTM5 { get; set; }
@@ -53,6 +54,8 @@ namespace Jawabsale_Generator.Core
         public string source { get; set; }
         public string Category { get; set; }
         public string model { get; set; }
+        public int index { get; set; }
+
 
 
 
