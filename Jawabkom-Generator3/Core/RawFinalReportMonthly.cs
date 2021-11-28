@@ -1,5 +1,7 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +10,9 @@ namespace Jawabkom_Generator3.Core
 {
     public class RawFinalReportMonthly
     {
+        [Key]
+        public ObjectId Id { get; set; }
+
         public int index { get; set; }
         public string created_date { get; set; }
         public string country_code { get; set; }

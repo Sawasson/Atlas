@@ -53,10 +53,6 @@ namespace Jawabkom_Generator3
 
             //await DownloadCsvFile();
 
-            //var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\users_subscriptions.csv");
-
-            //List<SubscriptionRevenue> allSubs = await ParseSubscriptions(AllSubsCSV);
-
             //var OperatorsCSV = System.IO.File.ReadAllLines(@"C:\temp\user_operator.csv");
 
             //List<Operator> allOps = await ParseOperators(OperatorsCSV);
@@ -66,14 +62,18 @@ namespace Jawabkom_Generator3
             allPayouts = await ParseOperatorPayouts(PayoutsCSV);
 
 
+            //var currencyList = await CurrencyExport();
             var AllCurrencyCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\currency.xls");
 
             currencyList = await ParseCurrency(AllCurrencyCSV);
-            //var currencyList = await CurrencyExport();
+
 
 
 
             var revenue = allSubs;
+
+
+
 
             //Bu bölüm parser içine alınabilir
             foreach (var item in revenue)
@@ -218,8 +218,6 @@ namespace Jawabkom_Generator3
             }
 
             //await CsvWriter(list, "RawRevenuesLastMonthly");
-
-            //await MongoHelper.AddMany(list);
 
 
             return list;
@@ -866,9 +864,9 @@ namespace Jawabkom_Generator3
         {
             HttpClient httpClient = new HttpClient();
 
-            //string currencyLink = "http://www.apilayer.net/api/live?access_key=744f84b0a99557d519fb07a7c4b9b3fa&format=1";
+            string currencyLink = "http://www.apilayer.net/api/live?access_key=744f84b0a99557d519fb07a7c4b9b3fa&format=1";
 
-            string currencyLink = "http://www.apilayer.net/api/live?access_key=602a9c6d2e8698e65c4eaabf965d87ac&format=1";
+            //string currencyLink = "http://www.apilayer.net/api/live?access_key=602a9c6d2e8698e65c4eaabf965d87ac&format=1";
 
 
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(currencyLink));

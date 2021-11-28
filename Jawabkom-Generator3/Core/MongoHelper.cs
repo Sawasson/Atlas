@@ -22,9 +22,26 @@ namespace Jawabkom_Generator3.Core
             return row;
         }
 
-        public static async Task AddMany<T>(List<T> data)
+        public static async Task AddMany<T>(List<T> data, string tableName)
         {
-            await db.AddManyAsync<T>(data);
+            await db.AddManyAsync<T>(data,tableName);
+        }
+
+        public static async Task<IEnumerable<Currency>> GetAll()
+        {
+            var list = await db.GetAllAsync<Currency>();
+            return list;
+        }
+
+        public static async Task<IEnumerable<T>> GetAll<T>(string tableName)
+        {
+            var list = await db.GetAllAsync<T>(tableName);
+            return list;
+        }
+
+        public static void DropTable(string tableName)
+        {
+            db.DropTable(tableName);
         }
 
     }

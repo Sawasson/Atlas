@@ -85,7 +85,7 @@ namespace JawabTawzeef.Core
         public bool postquare { get; set; }
         public string model { get; set; }
         //public string domain { get; set; }
-        //public string index { get; set; }
+        public int index { get; set; }
         //public double quotes { get; set; }
         //public string payout_percentage { get; set; }
 

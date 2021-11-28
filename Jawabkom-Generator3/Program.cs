@@ -21,19 +21,53 @@ namespace Jawabkom_Generator3
         static async Task Main(string[] args)
         {
 
+            var currencyList = await Jawabkom.RawCurrency();
 
-            //await Jawabkom.RawRevenuesLastMonthly();
+            MongoHelper.DropTable("RawCurrency");
 
-            //var lists = await Jawabkom.NewLTVSameMonth();
+            await MongoHelper.AddMany(currencyList, "RawCurrency");
 
-            //await Jawabkom.RawFinalReportMonthly(lists);
 
-            //await Jawabkom.LTVModels(lists);
 
-            //await Jawabkom.DailyCost();
+            var RawRevenuesLastMonthlyList = await Jawabkom.RawRevenuesLastMonthly();
 
-            //await Jawabkom.RawMonthlyClicks();
+            MongoHelper.DropTable("RawRevenuesLastMonthly");
 
+            MongoHelper.DropTable("Jawabkom_RawRevenuesLastMonthly");
+
+            await MongoHelper.AddMany(RawRevenuesLastMonthlyList, "Jawabkom_RawRevenuesLastMonthly");
+
+
+
+            var lists = await Jawabkom.NewLTVSameMonth();
+
+            var RawFinalReportMonthlyList = await Jawabkom.RawFinalReportMonthly(lists);
+
+            MongoHelper.DropTable("Jawabkom_RawFinalReportMonthly");
+
+            await MongoHelper.AddMany(RawFinalReportMonthlyList, "Jawabkom_RawFinalReportMonthly");
+
+
+
+            await Jawabkom.LTVModels(lists);
+
+
+
+
+            var DailyCostList = await Jawabkom.DailyCost();
+
+            MongoHelper.DropTable("Jawabkom_RawDailyCost");
+
+            await MongoHelper.AddMany(DailyCostList, "Jawabkom_RawDailyCost");
+
+
+
+
+            var RawMonthlyClicksList = await Jawabkom.RawMonthlyClicks();
+
+            MongoHelper.DropTable("Jawabkom_RawMonthlyClicks");
+
+            await MongoHelper.AddMany(RawMonthlyClicksList, "Jawabkom_RawMonthlyClicks");
 
 
 
@@ -41,16 +75,23 @@ namespace Jawabkom_Generator3
 
 
             //////GET GOOGLE SHEETS DATA
-            var sheet = GoogleSheetsKeys.Hawiyyah_NewLTVSAMEMONTH();
-            var gsh = new GoogleSheetsHelper.GoogleSheetsHelper(sheet.FilePath, sheet.Key);
-            var gsp = new GoogleSheetParameters() { RangeColumnStart = 1, RangeRowStart = 1, RangeColumnEnd = 20, RangeRowEnd = 30000, FirstRowIsHeaders = true, SheetName = sheet.SheetTitle };
-            var rowValues = gsh.GetDataFromSheet(gsp);
-            ExcelFactory.ExportExcelTable(rowValues, sheet.SheetTitle);
+            //var sheet = GoogleSheetsKeys.Hawiyyah_NewLTVSAMEMONTH();
+            //var gsh = new GoogleSheetsHelper.GoogleSheetsHelper(sheet.FilePath, sheet.Key);
+            //var gsp = new GoogleSheetParameters() { RangeColumnStart = 1, RangeRowStart = 1, RangeColumnEnd = 20, RangeRowEnd = 30000, FirstRowIsHeaders = true, SheetName = sheet.SheetTitle };
+            //var rowValues = gsh.GetDataFromSheet(gsp);
+            //ExcelFactory.ExportExcelTable(rowValues, sheet.SheetTitle);
 
 
 
+            //var currencyList = await Jawabkom.RawCurrency();
+            //await Jawabkom.RawRevenuesLastMonthly();
+            //var lists = await Jawabkom.NewLTVSameMonth();
+            //await Jawabkom.RawFinalReportMonthly(lists);
+            //await Jawabkom.LTVModels(lists);
 
+            //await Jawabkom.DailyCost();
 
+            //await Jawabkom.RawMonthlyClicks();
 
 
         }

@@ -12,10 +12,7 @@
     <ProjectReference Include="..\HawiyyahGenerator\HawiyyahGenerator.csproj" />
     <ProjectReference Include="..\Jawabkom-Generator3\Jawabkom-Generator3.csproj" />
     <ProjectReference Include="..\Jawabsale-Generator\Jawabsale-Generator.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Home\JawabTawzeef\" />
+    <ProjectReference Include="..\JawabTawzeef\JawabTawzeef.csproj" />
   </ItemGroup>
 
 </Project>

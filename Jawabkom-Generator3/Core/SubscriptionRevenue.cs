@@ -1,5 +1,7 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +10,8 @@ namespace Jawabkom_Generator3.Core
 {
     public class SubscriptionRevenue
     {
-
+        [Key]
+        public ObjectId Id { get; set; }
 
         public int next_subscription_id { get; set; }
 
@@ -36,7 +39,7 @@ namespace Jawabkom_Generator3.Core
         public string operator_name { get; set; }
 
         public int unique_id { get; set; }
-        public object Id { get; set; }
+        //public object Id { get; set; }
 
         public string utm_source_at_activation { get; set; }
 

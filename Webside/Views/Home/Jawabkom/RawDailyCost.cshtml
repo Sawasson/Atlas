@@ -17,14 +17,14 @@
         </thead>
         @foreach (var d in Model)
         {
-            <tr>
-                <td>@d.created_date</td>
-                <td>@d.country_code</td>
-                <td>@Math.Round(d.SearchCost, 2)</td>
-                <td>@Math.Round(d.GDNCost, 2)</td>
-                <td>@Math.Round(d.TotalCost, 2)</td>
+    <tr>
+        <td>@d.created_date.ToString("yyyy/MM/dd")</td>
+        <td>@d.country_code</td>
+        <td>@Math.Round(d.SearchCost, 2)</td>
+        <td>@Math.Round(d.GDNCost, 2)</td>
+        <td>@Math.Round(d.TotalCost, 2)</td>
 
-            </tr>
+    </tr>
 
         }
     </table>

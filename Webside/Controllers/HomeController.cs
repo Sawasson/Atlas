@@ -1,6 +1,8 @@
 ﻿using HawiyyahGenerator;
 using Jawabkom_Generator3;
+using Jawabkom_Generator3.Core;
 using Jawabsale_Generator;
+using JawabTawzeef;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -28,35 +30,33 @@ namespace Webside.Controllers
 
         public async Task<ActionResult> Jawabkom_RawCurrency()
         {
-            var list = await Jawabkom.RawCurrency();
+            var list = await MongoHelper.GetAll<Currency>("RawCurrency");
             return View("Jawabkom/RawCurrency", list);
         }
 
         public async Task<ActionResult> Jawabkom_RawRevenuesLastMonthly()
         {
-            var list = await Jawabkom.RawRevenuesLastMonthly();
+            var list = await MongoHelper.GetAll<RawRevenuesLastMonthly>("Jawabkom_RawRevenuesLastMonthly");
             return View("Jawabkom/RawRevenuesLastMonthly", list);
         }
 
         public async Task<ActionResult> Jawabkom_RawFinalReportMonthly()
         {
-            var lists = await Jawabkom.NewLTVSameMonth();
+            var list = await MongoHelper.GetAll<RawFinalReportMonthly>("Jawabkom_RawFinalReportMonthly");
 
-            var list = await Jawabkom.RawFinalReportMonthly(lists);
-            
             return View("Jawabkom/RawFinalReportMonthly", list);
         }
 
         public async Task<ActionResult> Jawabkom_RawDailyCost()
         {
-            var list = await Jawabkom.DailyCost();
+            var list = await MongoHelper.GetAll<RawDailyCost>("Jawabkom_RawDailyCost");
 
             return View("Jawabkom/RawDailyCost", list);
         }
 
         public async Task<ActionResult> Jawabkom_RawMonthlyClicks()
         {
-            var list = await Jawabkom.RawMonthlyClicks();
+            var list = await MongoHelper.GetAll<RawMonthlyClicks>("Jawabkom_RawMonthlyClicks");
 
             return View("Jawabkom/RawMonthlyClicks", list);
         }
@@ -145,11 +145,40 @@ namespace Webside.Controllers
             return View("Hawiyyah/FirstSubReportALL", list.Item3);
         }
 
+        public async Task<ActionResult> JawabTawzeef_RawRevenuesLastDaily()
+        {
+            var list = await JawabTawzeef.JawabTawzeef.RawRevenuesLastDaily();
 
+            ViewBag.Title = "Daily";
 
+            return View("JawabTawzeef/RawRevenuesLast", list);
+        }
 
+        public async Task<ActionResult> JawabTawzeef_RawRevenuesLastMonthly()
+        {
+            var lists = await JawabTawzeef.JawabTawzeef.RawRevenuesLastDaily();
 
+            var list = await JawabTawzeef.JawabTawzeef.RawRevenuesLastMonthly(lists);
 
+            ViewBag.Title = "Monthly";
+
+            return View("JawabTawzeef/RawRevenuesLast", list);
+        }
+
+        public async Task<ActionResult> JawabTawzeef_NewLTVSamemonth()
+        {
+            var list = await JawabTawzeef.JawabTawzeef.New_LTV_SAMEMONTH();
+
+            return View("JawabTawzeef/NewLTVSamemonth", list.Item1);
+        }
+
+        public async Task<ActionResult> JawabTawzeef_RawFinalReportMonthly()
+        {
+            var list2 = await JawabTawzeef.JawabTawzeef.New_LTV_SAMEMONTH();
+            var list = await JawabTawzeef.JawabTawzeef.RawFinalReportMonthly(list2);
+            return View("JawabTawzeef/RawFinalReportMonthly", list);
+        }
+        
 
         public IActionResult Privacy()
         {

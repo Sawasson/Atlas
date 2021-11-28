@@ -99,6 +99,11 @@ namespace Jawabkom_Generator3.Core
             await this.GetQuery<T>().InsertManyAsync(item).ConfigureAwait(false);
         }
 
+        public async Task AddManyAsync<T>(List<T> item, string tableName)
+        {
+            await this.GetTable<T>(tableName).InsertManyAsync(item).ConfigureAwait(false);
+        }
+
         public void Add<T>(T item)
         {
             this.GetQuery<T>().InsertOne(item);
@@ -114,6 +119,14 @@ namespace Jawabkom_Generator3.Core
             await this.client.DropDatabaseAsync(dbName);
         }
 
+        public async Task DropManyAsync<T>(string tableName)
+        {
+            await this.GetTable<T>(tableName).DeleteManyAsync(tableName).ConfigureAwait(false);
+        }
 
+        public void DropTable(string tableName)
+        {
+            database.DropCollection(tableName);
+        }
     }
 }

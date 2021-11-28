@@ -53,7 +53,7 @@ namespace JawabMehan
                 operator_name = x.Key.operator_name,
                 Parked = x.Key.Parked,
                 period_type = x.Key.period_type,
-                user_id = x.GroupBy(x => x.user_id).Count(),
+                user_id = x.Count(),
                 currency_amount = x.Sum(x => x.currency_amount),
             }).ToList();
 
