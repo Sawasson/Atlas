@@ -15,7 +15,7 @@ namespace JawabTawzeef
 {
     public class JawabTawzeef
     {
-        public static async Task<List<SubscriptionRevenue>> RawRevenuesLastDaily()
+        public static async Task<Tuple<List<SubscriptionRevenue>, List<RawRevenuesLastDaily>>> RawRevenuesLastDaily()
         {
             var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Tawzeef\Base\TAWZEEF-subs-6190862.csv");
             var allSubs = await ParseSubscriptions(AllSubsCSV);
@@ -131,11 +131,11 @@ namespace JawabTawzeef
 
             //await CsvWriter(MTD_DailyX, "Raw_Revenues_Last_Daily");
 
-            return revenue;
+            return Tuple.Create(revenue, MTD_DailyX);
 
         }
 
-        public static async Task<List<SubscriptionRevenue>> RawRevenuesLastMonthly(List<SubscriptionRevenue> list) 
+        public static async Task<List<RawRevenuesLastMonthly>> RawRevenuesLastMonthly(List<SubscriptionRevenue> list) 
         {
             var revenue = list;
 
@@ -144,7 +144,7 @@ namespace JawabTawzeef
                 item.created_date = DatetimeMonthlyParse(item.created_date);
             }
 
-            revenue = revenue.GroupBy(x => new
+            var revenue_ = revenue.GroupBy(x => new
             {
                 x.created_date,
                 x.country_code,
@@ -152,7 +152,7 @@ namespace JawabTawzeef
                 x.Parked,
                 x.period_type,
                 x.Category,
-            }).Select(x => new SubscriptionRevenue
+            }).Select(x => new RawRevenuesLastMonthly
             {
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
@@ -167,11 +167,11 @@ namespace JawabTawzeef
 
             //await CsvWriter(revenue, "Raw_Revenues_Last_Monthly");
 
-            return revenue;
+            return revenue_;
 
         }
 
-        public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>>> New_LTV_SAMEMONTH()
+        public static async Task<Tuple<List<NewLTVSameMonth>, List<SubscriptionRevenue>>> New_LTV_SAMEMONTH()
         {
 
             var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Tawzeef\Base\TAWZEEF-subs-6190862.csv");
@@ -351,7 +351,7 @@ namespace JawabTawzeef
             dateCountsNewLtv = dateCountsNewLtv.Where(x => x.tpay_activated_date == x.created_date).ToList();
 
 
-            dateCountsNewLtv = dateCountsNewLtv.GroupBy(x => new
+            var dateCountsNewLtv_ = dateCountsNewLtv.GroupBy(x => new
             {
                 x.created_date,
                 x.country_code,
@@ -359,7 +359,7 @@ namespace JawabTawzeef
                 x.operator_name,
                 x.Parked,
                 x.period_type,
-            }).Select(x => new SubscriptionRevenue
+            }).Select(x => new NewLTVSameMonth
             {
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
@@ -373,7 +373,7 @@ namespace JawabTawzeef
             }).ToList();
 
             int index = 0;
-            foreach (var item in dateCountsNewLtv)
+            foreach (var item in dateCountsNewLtv_)
             {
                 item.Category = Checkers.CategoryChecker(item.utm_source_at_subscription);
                 item.model = "SAMEMONTH";
@@ -384,12 +384,12 @@ namespace JawabTawzeef
             //await CsvWriter(dateCountsNewLtv, "New_LTV_SAMEMONTH");
 
 
-            return Tuple.Create(dateCountsNewLtv, dateCountsx);
+            return Tuple.Create(dateCountsNewLtv_, dateCountsx);
 
 
         }
 
-        public static async Task<List<SubscriptionRevenue>> RawFinalReportMonthly(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
+        public static async Task<List<RawFinalReportMonthly>> RawFinalReportMonthly(Tuple<List<NewLTVSameMonth>, List<SubscriptionRevenue>> lists)
         {
 
             var dateCountsNewLtv = lists.Item1;
@@ -464,7 +464,7 @@ namespace JawabTawzeef
                 item.created_date = DatetimeMonthlyParse(item.created_date);
             }
 
-            dateCountsx2 = dateCountsx2.GroupBy(x => new
+            var dateCountsx2_ = dateCountsx2.GroupBy(x => new
             {
                 x.created_date,
                 x.country_code,
@@ -472,7 +472,7 @@ namespace JawabTawzeef
                 x.operator_name,
                 x.Parked,
                 x.period_type,
-            }).Select(x => new SubscriptionRevenue
+            }).Select(x => new RawFinalReportMonthly
             {
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
@@ -486,22 +486,22 @@ namespace JawabTawzeef
             }).ToList();
 
             int index = 0;
-            foreach (var item in dateCountsx2)
+            foreach (var item in dateCountsx2_)
             {
                 item.Category = Checkers.CategoryChecker(item.utm_source_at_subscription);
                 item.index = index;
-                item.model = "OLDMODEL";
+                //item.model = "OLDMODEL";
                 index++;
             }
 
             //await CsvWriter(dateCountsx2, "Raw_Final_Report_Monthly");
 
-            return dateCountsx2;
+            return dateCountsx2_;
 
         }
 
 
-        public static async Task<List<DailyCost>> RawDailyCost()
+        public static async Task<Tuple<List<RawDailyCost>, List<DailyCost>>> RawDailyCost()
         {
             var DailyCostCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\DailyCost-csv");
 
@@ -571,12 +571,12 @@ namespace JawabTawzeef
 
             await CsvWriter(dailyCostGroup_, "Raw_daily_cost");
 
-            return dailyCost;
+            return Tuple.Create(dailyCostGroup_, dailyCost);
 
 
         }
 
-        public static async Task RawMonthlyClicks(List<DailyCost> list)
+        public static async Task<List<RawMonthlyClicks>> RawMonthlyClicks(List<DailyCost> list)
         {
 
             //var DailyCostCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\DailyCost-csv");
@@ -644,8 +644,9 @@ namespace JawabTawzeef
 
             //await CsvWriter(dailyclicksGroup, "daily_clicks_monthly");
 
-            await CsvWriter(dailyclicksGroup_, "Raw_monthly_clicks");
+            //await CsvWriter(dailyclicksGroup_, "Raw_monthly_clicks");
 
+            return dailyclicksGroup_;
         }
 
 

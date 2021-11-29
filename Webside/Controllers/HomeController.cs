@@ -11,6 +11,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Webside.Models;
+using MongoDB;
+using MongoHelper = MongoDB.MongoHelper;
+using JawabTawzeef.Core;
+using NewLTVSameMonth = JawabTawzeef.Core.NewLTVSameMonth;
 
 namespace Webside.Controllers
 {
@@ -30,33 +34,34 @@ namespace Webside.Controllers
 
         public async Task<ActionResult> Jawabkom_RawCurrency()
         {
-            var list = await MongoHelper.GetAll<Currency>("RawCurrency");
+            var list = await MongoHelper.GetAll<Jawabkom_Generator3.Core.Currency>("RawCurrency");
+                
             return View("Jawabkom/RawCurrency", list);
         }
 
         public async Task<ActionResult> Jawabkom_RawRevenuesLastMonthly()
         {
-            var list = await MongoHelper.GetAll<RawRevenuesLastMonthly>("Jawabkom_RawRevenuesLastMonthly");
+            var list = await MongoHelper.GetAll<Jawabkom_Generator3.Core.RawRevenuesLastMonthly>("Jawabkom_RawRevenuesLastMonthly");
             return View("Jawabkom/RawRevenuesLastMonthly", list);
         }
 
         public async Task<ActionResult> Jawabkom_RawFinalReportMonthly()
         {
-            var list = await MongoHelper.GetAll<RawFinalReportMonthly>("Jawabkom_RawFinalReportMonthly");
+            var list = await MongoHelper.GetAll<Jawabkom_Generator3.Core.RawFinalReportMonthly>("Jawabkom_RawFinalReportMonthly");
 
             return View("Jawabkom/RawFinalReportMonthly", list);
         }
 
         public async Task<ActionResult> Jawabkom_RawDailyCost()
         {
-            var list = await MongoHelper.GetAll<RawDailyCost>("Jawabkom_RawDailyCost");
+            var list = await MongoHelper.GetAll<Jawabkom_Generator3.Core.RawDailyCost>("Jawabkom_RawDailyCost");
 
             return View("Jawabkom/RawDailyCost", list);
         }
 
         public async Task<ActionResult> Jawabkom_RawMonthlyClicks()
         {
-            var list = await MongoHelper.GetAll<RawMonthlyClicks>("Jawabkom_RawMonthlyClicks");
+            var list = await MongoHelper.GetAll<Jawabkom_Generator3.Core.RawMonthlyClicks>("Jawabkom_RawMonthlyClicks");
 
             return View("Jawabkom/RawMonthlyClicks", list);
         }
@@ -64,33 +69,30 @@ namespace Webside.Controllers
 
         public async Task<ActionResult> Jawabsale_RevenuesLast()
         {
-            var list = await Jawabsale.RevenuesLast();
+            var list = await MongoHelper.GetAll<Jawabsale_Generator.Core.RevenuesLast>("Jawabsale_RevenuesLast");
 
             return View("Jawabsale/RevenuesLast", list);
         }
 
         public async Task<ActionResult> Jawabsale_NewLTVSamemonth()
         {
-            var list = await Jawabsale.NewLTVSameMonth();
+            var list = await MongoHelper.GetAll<Jawabsale_Generator.Core.NewLTVSameMonth>("Jawabsale_NewLTVSameMonth");
 
-            return View("Jawabsale/NewLTVSamemonth", list.Item1);
+            return View("Jawabsale/NewLTVSamemonth", list);
         }
 
         public async Task<ActionResult> Jawabsale_FirstSubReport()
         {
-            var lists = await Jawabsale.NewLTVSameMonth();
-            var list = await Jawabsale.FirstSubReport(lists);
+            var list = await MongoHelper.GetAll<Jawabsale_Generator.Core.FirstSubReport>("Jawabsale_FirstSubReport");
 
-            return View("Jawabsale/FirstSubReport", list.Item2);
+            return View("Jawabsale/FirstSubReport", list);
         }
 
-        public async Task<ActionResult> Jawabsale_LTVMODELS()
+        public async Task<ActionResult> Jawabsale_LTVModels()
         {
-            var lists = await Jawabsale.NewLTVSameMonth();
-            var lists2 = await Jawabsale.FirstSubReport(lists);
-            var list = await Jawabsale.LTVModels(lists2);
+            var list = await MongoHelper.GetAll<Jawabsale_Generator.Core.LTVModels>("Jawabsale_LTVModels");
 
-            return View("Jawabsale/LTVMODELS", list);
+            return View("Jawabsale/LTVModels", list);
         }
 
         public async Task<ActionResult> Hawiyyah_RevenuesLastALL()
@@ -147,36 +149,44 @@ namespace Webside.Controllers
 
         public async Task<ActionResult> JawabTawzeef_RawRevenuesLastDaily()
         {
-            var list = await JawabTawzeef.JawabTawzeef.RawRevenuesLastDaily();
+            var list = await MongoHelper.GetAll<RawRevenuesLastDaily>("JawabTawzeef_RawRevenuesLastDaily");
 
-            ViewBag.Title = "Daily";
-
-            return View("JawabTawzeef/RawRevenuesLast", list);
+            return View("JawabTawzeef/RawRevenuesLastDaily", list);
         }
 
         public async Task<ActionResult> JawabTawzeef_RawRevenuesLastMonthly()
         {
-            var lists = await JawabTawzeef.JawabTawzeef.RawRevenuesLastDaily();
+            var list = await MongoHelper.GetAll<JawabTawzeef.Core.RawRevenuesLastMonthly>("JawabTawzeef_RawRevenuesLastMonthly");
 
-            var list = await JawabTawzeef.JawabTawzeef.RawRevenuesLastMonthly(lists);
-
-            ViewBag.Title = "Monthly";
-
-            return View("JawabTawzeef/RawRevenuesLast", list);
+            return View("JawabTawzeef/RawRevenuesLastMonthly", list);
         }
 
-        public async Task<ActionResult> JawabTawzeef_NewLTVSamemonth()
+        public async Task<ActionResult> JawabTawzeef_New_LTV_SAMEMONTH()
         {
-            var list = await JawabTawzeef.JawabTawzeef.New_LTV_SAMEMONTH();
+            var list = await MongoHelper.GetAll<NewLTVSameMonth>("JawabTawzeef_NewLTVSamemonth");
 
-            return View("JawabTawzeef/NewLTVSamemonth", list.Item1);
+            return View("JawabTawzeef/NewLTVSamemonth", list);
         }
 
         public async Task<ActionResult> JawabTawzeef_RawFinalReportMonthly()
         {
-            var list2 = await JawabTawzeef.JawabTawzeef.New_LTV_SAMEMONTH();
-            var list = await JawabTawzeef.JawabTawzeef.RawFinalReportMonthly(list2);
+            var list = await MongoHelper.GetAll<JawabTawzeef.Core.RawFinalReportMonthly>("JawabTawzeef_RawFinalReportMonthly");
+
             return View("JawabTawzeef/RawFinalReportMonthly", list);
+        }
+
+        public async Task<ActionResult> JawabTawzeef_RawDailyCost()
+        {
+            var list = await MongoHelper.GetAll<JawabTawzeef.Core.RawDailyCost>("JawabTawzeef_RawDailyCost");
+
+            return View("JawabTawzeef/RawDailyCost", list);
+        }
+
+        public async Task<ActionResult> JawabTawzeef_RawMonthlyClicks()
+        {
+            var list = await MongoHelper.GetAll<JawabTawzeef.Core.RawMonthlyClicks>("JawabTawzeef_RawMonthlyClicks");
+
+            return View("JawabTawzeef/RawMonthlyClicks", list);
         }
         
 

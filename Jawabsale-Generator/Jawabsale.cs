@@ -177,7 +177,7 @@ namespace Jawabsale_Generator
 
         }
 
-        public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>, List<SubscriptionRevenue>>> NewLTVSameMonth()
+        public static async Task<Tuple<List<NewLTVSameMonth>, List<SubscriptionRevenue>, List<SubscriptionRevenue>>> NewLTVSameMonth()
         {
 
             var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Jawabsale\Base\SALE-subs-55419400.csv");
@@ -418,7 +418,7 @@ namespace Jawabsale_Generator
             dateCountsNewLtv = dateCountsNewLtv.Where(x => x.tpay_activated_date == x.created_date).ToList();
 
 
-            dateCountsNewLtv = dateCountsNewLtv.GroupBy(x => new
+            var dateCountsNewLtv_ = dateCountsNewLtv.GroupBy(x => new
             {
                 x.created_date,
                 x.country_code,
@@ -426,7 +426,7 @@ namespace Jawabsale_Generator
                 x.operator_name,
                 x.Parked,
                 x.period_type,
-            }).Select(x => new SubscriptionRevenue
+            }).Select(x => new NewLTVSameMonth
             {
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
@@ -440,7 +440,7 @@ namespace Jawabsale_Generator
             }).ToList();
 
             int index = 0;
-            foreach (var item in dateCountsNewLtv)
+            foreach (var item in dateCountsNewLtv_)
             {
                 item.Category = Checkers.CategoryChecker(item.utm_source_at_subscription);
                 item.model = "SAMEMONTH";
@@ -451,11 +451,11 @@ namespace Jawabsale_Generator
 
             //await CsvWriter(dateCountsNewLtv_, "New_LTV_SAMEMONTH");
 
-            return Tuple.Create(dateCountsNewLtv, dateCountsx, subReportx);
+            return Tuple.Create(dateCountsNewLtv_, dateCountsx, subReportx);
         }
 
 
-        public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>, List<SubscriptionRevenue>>> FirstSubReport(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
+        public static async Task<Tuple<List<NewLTVSameMonth>, List<FirstSubReport>, List<SubscriptionRevenue>>> FirstSubReport(Tuple<List<NewLTVSameMonth>, List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
         {
 
             var PayoutsCSV = System.IO.File.ReadAllLines(@"C:\temp\Jawabsale\Base\OperatorPayouts-Jawabsale.csv");
@@ -541,39 +541,39 @@ namespace Jawabsale_Generator
                 net_usd_amount = x.Sum(x => x.net_usd_amount),
             }).ToList();
 
-            //List<FirstSubReport> firstSubReportList = new List<FirstSubReport>();
+            List<FirstSubReport> firstSubReportList = new List<FirstSubReport>();
 
-            //int f = 0;
-            //foreach (var item in dateCountsx2)
-            //{
-            //    FirstSubReport firstSubReport = new FirstSubReport();
-            //    firstSubReport.index = f;
-            //    f++;
-            //    firstSubReport.created_date = item.created_date;
-            //    firstSubReport.country_code = item.country_code;
-            //    firstSubReport.utm_source_at_subscription = item.utm_source_at_subscription;
-            //    firstSubReport.operator_name = item.operator_name;
-            //    firstSubReport.Parked = item.Parked;
-            //    firstSubReport.period_type = item.period_type;
-            //    firstSubReport.Category = item.Category;
-            //    firstSubReport.user_id = item.user_id;
-            //    firstSubReport.usd_amount = item.usd_amount;
-            //    firstSubReport.net_usd_amount = item.net_usd_amount;
-            //    firstSubReportList.Add(firstSubReport);
-
-
-            //}
+            int f = 0;
+            foreach (var item in dateCountsx2)
+            {
+                FirstSubReport firstSubReport = new FirstSubReport();
+                firstSubReport.index = f;
+                f++;
+                firstSubReport.created_date = item.created_date;
+                firstSubReport.country_code = item.country_code;
+                firstSubReport.utm_source_at_subscription = item.utm_source_at_subscription;
+                firstSubReport.operator_name = item.operator_name;
+                firstSubReport.Parked = item.Parked;
+                firstSubReport.period_type = item.period_type;
+                firstSubReport.Category = item.Category;
+                firstSubReport.user_id = item.user_id;
+                firstSubReport.usd_amount = item.usd_amount;
+                firstSubReport.net_usd_amount = item.net_usd_amount;
+                firstSubReportList.Add(firstSubReport);
 
 
-            await CsvWriter(dateCountsx2, "first_sub_report");
+            }
 
-            return Tuple.Create(dateCountsNewLtv, dateCountsx2, subReportx);
+
+            //await CsvWriter(firstSubReportList, "first_sub_report");
+
+            return Tuple.Create(dateCountsNewLtv, firstSubReportList, subReportx);
 
 
         }
 
 
-        public static async Task<List<LTVModels>> LTVModels(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists2)
+        public static async Task<List<LTVModels>> LTVModels(Tuple<List<NewLTVSameMonth>, List<FirstSubReport>, List<SubscriptionRevenue>> lists2)
         {
 
             List<LTVModels> lTVModels = new List<LTVModels>();

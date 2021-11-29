@@ -31,8 +31,6 @@ namespace Jawabkom_Generator3
 
             var RawRevenuesLastMonthlyList = await Jawabkom.RawRevenuesLastMonthly();
 
-            MongoHelper.DropTable("RawRevenuesLastMonthly");
-
             MongoHelper.DropTable("Jawabkom_RawRevenuesLastMonthly");
 
             await MongoHelper.AddMany(RawRevenuesLastMonthlyList, "Jawabkom_RawRevenuesLastMonthly");
