@@ -1,5 +1,7 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +10,9 @@ namespace HawiyyahGenerator.Core
 {
     public class SubscriptionRevenue
     {
-        public object Id { get; set; }
+        [Key]
+        public ObjectId Id { get; set; }
+        //public object Id { get; set; }
         public int user_id { get; set; }
         public int subscription_id { get; set; }
         public int next_subscription_id { get; set; }

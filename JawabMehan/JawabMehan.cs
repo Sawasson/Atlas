@@ -136,7 +136,7 @@ namespace JawabMehan
 
         }
 
-        public static async Task<List<RawFinalReportMonthly>> RawRevenuesLastMonthly(List<SubscriptionRevenue> list)
+        public static async Task<List<RawRevenuesLastMonthly>> RawRevenuesLastMonthly(List<SubscriptionRevenue> list)
         {
             var revenue = list;
 
@@ -153,7 +153,7 @@ namespace JawabMehan
                 x.Parked,
                 x.period_type,
                 x.Category,
-            }).Select(x => new RawFinalReportMonthly
+            }).Select(x => new RawRevenuesLastMonthly
             {
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
@@ -172,7 +172,7 @@ namespace JawabMehan
 
         }
 
-        public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>>> New_LTV_SAMEMONTH()
+        public static async Task<Tuple<List<NewLTVSameMonth>, List<SubscriptionRevenue>>> New_LTV_SAMEMONTH()
         {
 
             var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Tawzeef\Base\TAWZEEF-subs-6190862.csv");
@@ -352,7 +352,7 @@ namespace JawabMehan
             dateCountsNewLtv = dateCountsNewLtv.Where(x => x.tpay_activated_date == x.created_date).ToList();
 
 
-            dateCountsNewLtv = dateCountsNewLtv.GroupBy(x => new
+            var dateCountsNewLtv_ = dateCountsNewLtv.GroupBy(x => new
             {
                 x.created_date,
                 x.country_code,
@@ -360,7 +360,7 @@ namespace JawabMehan
                 x.operator_name,
                 x.Parked,
                 x.period_type,
-            }).Select(x => new SubscriptionRevenue
+            }).Select(x => new NewLTVSameMonth
             {
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
@@ -374,7 +374,7 @@ namespace JawabMehan
             }).ToList();
 
             int index = 0;
-            foreach (var item in dateCountsNewLtv)
+            foreach (var item in dateCountsNewLtv_)
             {
                 item.Category = Checkers.CategoryChecker(item.utm_source_at_subscription);
                 item.model = "SAMEMONTH";
@@ -385,12 +385,12 @@ namespace JawabMehan
             //await CsvWriter(dateCountsNewLtv, "New_LTV_SAMEMONTH");
 
 
-            return Tuple.Create(dateCountsNewLtv, dateCountsx);
+            return Tuple.Create(dateCountsNewLtv_, dateCountsx);
 
 
         }
 
-        public static async Task<List<RawFinalReportMonthly>> RawFinalReportMonthly(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
+        public static async Task<List<RawFinalReportMonthly>> RawFinalReportMonthly(Tuple<List<NewLTVSameMonth>, List<SubscriptionRevenue>> lists)
         {
 
             var dateCountsNewLtv = lists.Item1;

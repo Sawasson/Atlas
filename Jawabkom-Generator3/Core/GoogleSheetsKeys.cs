@@ -18,7 +18,7 @@ namespace Jawabkom_Generator3.Core
             
             GoogleSheetsKeys RawCurrency = new GoogleSheetsKeys();
             RawCurrency.SheetTitle = "Raw_Currency";
-            RawCurrency.Key = "1_aMRay1SBETIBBAaaAKrGfA286Hk_PdyxGyv3YiJWoc";
+            RawCurrency.Key = "1_aMRay1SBETIBBAaaAKrGfA286Hk_PdyxGyv3YiJkoc";
             return RawCurrency;
         }
 
@@ -26,7 +26,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RawRevenuesLastMonthly = new GoogleSheetsKeys();
             RawRevenuesLastMonthly.SheetTitle = "Raw_Revenues_Last_Monthly";
-            RawRevenuesLastMonthly.Key = "1_aMRay1SBETIBBAaaAKrGfA286Hk_PdyxGyv3YiJWoc";
+            RawRevenuesLastMonthly.Key = "1_aMRay1SBETIBBAaaAKrGfA286Hk_PdyxGyv3YiJkoc";
             return RawRevenuesLastMonthly;
         }
 
@@ -34,7 +34,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys NewLtvSameMonth = new GoogleSheetsKeys();
             NewLtvSameMonth.SheetTitle = "New_LTV_SAMEMONTH";
-            NewLtvSameMonth.Key = "1_aMRay1SBETIBBAaaAKrGfA286Hk_PdyxGyv3YiJWoc";
+            NewLtvSameMonth.Key = "1_aMRay1SBETIBBAaaAKrGfA286Hk_PdyxGyv3YiJkoc";
             return NewLtvSameMonth;
         }
 
@@ -42,7 +42,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RawFinalReportMonthly = new GoogleSheetsKeys();
             RawFinalReportMonthly.SheetTitle = "Raw_Final_Report_Monthly";
-            RawFinalReportMonthly.Key = "1_aMRay1SBETIBBAaaAKrGfA286Hk_PdyxGyv3YiJWoc";
+            RawFinalReportMonthly.Key = "1_aMRay1SBETIBBAaaAKrGfA286Hk_PdyxGyv3YiJkoc";
             return RawFinalReportMonthly;
         }
 
@@ -50,7 +50,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RawFinalReportMonthly = new GoogleSheetsKeys();
             RawFinalReportMonthly.SheetTitle = "Raw_daily_cost";
-            RawFinalReportMonthly.Key = "1_aMRay1SBETIBBAaaAKrGfA286Hk_PdyxGyv3YiJWoc";
+            RawFinalReportMonthly.Key = "1_aMRay1SBETIBBAaaAKrGfA286Hk_PdyxGyv3YiJkoc";
             return RawFinalReportMonthly;
         }
 
@@ -58,7 +58,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RawMonthlyClicks = new GoogleSheetsKeys();
             RawMonthlyClicks.SheetTitle = "Raw_monthly_clicks";
-            RawMonthlyClicks.Key = "1_aMRay1SBETIBBAaaAKrGfA286Hk_PdyxGyv3YiJWoc";
+            RawMonthlyClicks.Key = "1_aMRay1SBETIBBAaaAKrGfA286Hk_PdyxGyv3YiJkoc";
             return RawMonthlyClicks;
         }
 
@@ -66,7 +66,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RevenuesLast = new GoogleSheetsKeys();
             RevenuesLast.SheetTitle = "RevenuesLast";
-            RevenuesLast.Key = "1m6FznRu0q7hTrLS5KWkorYHdpxRhlQhF0hF-opaA6gw";
+            RevenuesLast.Key = "1m6FznRu0q7hTrLS5KWkorYHdpxRhlQhF0hF-opaA7gw";
             return RevenuesLast;
         }
 
@@ -74,7 +74,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys NewLtvSameMonth = new GoogleSheetsKeys();
             NewLtvSameMonth.SheetTitle = "New_LTV_SAMEMONTH";
-            NewLtvSameMonth.Key = "1m6FznRu0q7hTrLS5KWkorYHdpxRhlQhF0hF-opaA6gw";
+            NewLtvSameMonth.Key = "1m6FznRu0q7hTrLS5KWkorYHdpxRhlQhF0hF-opaA7gw";
             return NewLtvSameMonth;
         }
 
@@ -82,7 +82,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys FirstSubReport = new GoogleSheetsKeys();
             FirstSubReport.SheetTitle = "FirstSubReport";
-            FirstSubReport.Key = "1m6FznRu0q7hTrLS5KWkorYHdpxRhlQhF0hF-opaA6gw";
+            FirstSubReport.Key = "1m6FznRu0q7hTrLS5KWkorYHdpxRhlQhF0hF-opaA7gw";
             return FirstSubReport;
         }
 
@@ -90,7 +90,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RevenuesLast = new GoogleSheetsKeys();
             RevenuesLast.SheetTitle = "RevenuesLast";
-            RevenuesLast.Key = "1aSdBBpsLbgVBOVRHdOp-QJIEcToyksxVcAfqgXV2aT4";
+            RevenuesLast.Key = "1aSdBBpsLbgVBOVRHdOp-QJIEcToyksxVcAfqgc35aT4";
             return RevenuesLast;
         }
 
@@ -98,7 +98,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RevenuesLast2 = new GoogleSheetsKeys();
             RevenuesLast2.SheetTitle = "RevenuesLast";
-            RevenuesLast2.Key = "1YmscadeZNiZwSTIoCuLXR5ypVTtFpwJGKDcGi4CzhdE";
+            RevenuesLast2.Key = "1YmscadeZNiZwSTIoCuLXR5ypVTtFpwJGKDcg2tCzhdE";
             return RevenuesLast2;
         }
 
@@ -106,7 +106,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RevenuesLast3 = new GoogleSheetsKeys();
             RevenuesLast3.SheetTitle = "RevenuesLast";
-            RevenuesLast3.Key = "16kOPmUyrm-Cir-VKCYpO5oM_dcBTSyjm-Gt859N4jqc";
+            RevenuesLast3.Key = "16kOPmUyrm-Cir-VKCYpO5oM_dcBTSyjm-Gt859N4gqc";
             return RevenuesLast3;
         }
 
@@ -114,7 +114,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys NewLtvSameMonth = new GoogleSheetsKeys();
             NewLtvSameMonth.SheetTitle = "New_LTV_SAMEMONTH";
-            NewLtvSameMonth.Key = "1aSdBBpsLbgVBOVRHdOp-QJIEcToyksxVcAfqgXV2aT4";
+            NewLtvSameMonth.Key = "1aSdBBpsLbgVBOVRHdOp-QJIEcToyksxVcAfqgc35aT4";
             return NewLtvSameMonth;
         }
 
@@ -122,7 +122,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys FirstSubReport = new GoogleSheetsKeys();
             FirstSubReport.SheetTitle = "FirstSubReport";
-            FirstSubReport.Key = "1aSdBBpsLbgVBOVRHdOp-QJIEcToyksxVcAfqgXV2aT4";
+            FirstSubReport.Key = "1aSdBBpsLbgVBOVRHdOp-QJIEcToyksxVcAfqgc35aT4";
             return FirstSubReport;
         }
 
@@ -130,7 +130,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RawRevenuesLastDaily = new GoogleSheetsKeys();
             RawRevenuesLastDaily.SheetTitle = "Raw_Revenues_Last_Daily";
-            RawRevenuesLastDaily.Key = "1rNbaGnwJNHld2OE--AiRwbF7P_uYN3Um0j8NtDRKhjY";
+            RawRevenuesLastDaily.Key = "1rNbaGnwJNHld2OE--AiRwbF7P_uYN3Um0j4NtDRKhjY";
             return RawRevenuesLastDaily;
         }
 
@@ -138,7 +138,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RawRevenuesLastMonthly = new GoogleSheetsKeys();
             RawRevenuesLastMonthly.SheetTitle = "Raw_Revenues_Last_Monthly";
-            RawRevenuesLastMonthly.Key = "1rNbaGnwJNHld2OE--AiRwbF7P_uYN3Um0j8NtDRKhjY";
+            RawRevenuesLastMonthly.Key = "1rNbaGnwJNHld2OE--AiRwbF7P_uYN3Um0j4NtDRKhjY";
             return RawRevenuesLastMonthly;
         }
 
@@ -146,7 +146,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RawFinalReportMonthly = new GoogleSheetsKeys();
             RawFinalReportMonthly.SheetTitle = "Raw_Final_Report_Monthly";
-            RawFinalReportMonthly.Key = "1rNbaGnwJNHld2OE--AiRwbF7P_uYN3Um0j8NtDRKhjY";
+            RawFinalReportMonthly.Key = "1rNbaGnwJNHld2OE--AiRwbF7P_uYN3Um0j4NtDRKhjY";
             return RawFinalReportMonthly;
         }
 
@@ -154,7 +154,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RawDailyCost = new GoogleSheetsKeys();
             RawDailyCost.SheetTitle = "Raw_daily_cost";
-            RawDailyCost.Key = "1rNbaGnwJNHld2OE--AiRwbF7P_uYN3Um0j8NtDRKhjY";
+            RawDailyCost.Key = "1rNbaGnwJNHld2OE--AiRwbF7P_uYN3Um0j4NtDRKhjY";
             return RawDailyCost;
         }
 
@@ -162,7 +162,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys RawMonthlyClicks = new GoogleSheetsKeys();
             RawMonthlyClicks.SheetTitle = "Raw_monthly_clicks";
-            RawMonthlyClicks.Key = "1rNbaGnwJNHld2OE--AiRwbF7P_uYN3Um0j8NtDRKhjY";
+            RawMonthlyClicks.Key = "1rNbaGnwJNHld2OE--AiRwbF7P_uYN3Um0j4NtDRKhjY";
             return RawMonthlyClicks;
         }
 
@@ -171,7 +171,7 @@ namespace Jawabkom_Generator3.Core
         {
             GoogleSheetsKeys DataArifDontTouch = new GoogleSheetsKeys();
             DataArifDontTouch.SheetTitle = "Data-Arif-Dont-Touch";
-            DataArifDontTouch.Key = "1PaxAzMmtCENLz2MT24o65NqsMidazGkwiMYs9WexeDI";
+            DataArifDontTouch.Key = "1PaxAzMmtCENLz2MT24o65NqsMidazGkwiMYs6WexeDI";
             return DataArifDontTouch;
         }
 

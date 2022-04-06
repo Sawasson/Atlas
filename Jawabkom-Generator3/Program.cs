@@ -73,7 +73,7 @@ namespace Jawabkom_Generator3
 
 
             //////GET GOOGLE SHEETS DATA
-            //var sheet = GoogleSheetsKeys.Hawiyyah_NewLTVSAMEMONTH();
+            //var sheet = GoogleSheetsKeys.Jawabkom_RawRevenuesLastMonthly();
             //var gsh = new GoogleSheetsHelper.GoogleSheetsHelper(sheet.FilePath, sheet.Key);
             //var gsp = new GoogleSheetParameters() { RangeColumnStart = 1, RangeRowStart = 1, RangeColumnEnd = 20, RangeRowEnd = 30000, FirstRowIsHeaders = true, SheetName = sheet.SheetTitle };
             //var rowValues = gsh.GetDataFromSheet(gsp);

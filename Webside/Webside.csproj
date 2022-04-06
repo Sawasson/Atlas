@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HawiyyahGenerator\HawiyyahGenerator.csproj" />
     <ProjectReference Include="..\Jawabkom-Generator3\Jawabkom-Generator3.csproj" />
+    <ProjectReference Include="..\JawabMehan\JawabMehan.csproj" />
     <ProjectReference Include="..\Jawabsale-Generator\Jawabsale-Generator.csproj" />
     <ProjectReference Include="..\JawabTawzeef\JawabTawzeef.csproj" />
   </ItemGroup>

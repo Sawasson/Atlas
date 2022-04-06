@@ -15,7 +15,7 @@ namespace PlayWin
 {
     public class PlayWin
     {
-        public static async Task RawRevenuesLastMonthly()
+        public static async Task<List<RawRevenuesLastMonthly>> RawRevenuesLastMonthly()
         {
             var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Tawzeef\Base\TAWZEEF-subs-6190862.csv");
             var allSubs = await ParseSubscriptions(AllSubsCSV);
@@ -52,7 +52,7 @@ namespace PlayWin
                 operator_name = x.Key.operator_name,
                 Parked = x.Key.Parked,
                 period_type = x.Key.period_type,
-                user_id = x.GroupBy(x => x.user_id).Count(),
+                user_id = x.Count(),
                 currency_amount = x.Sum(x => x.currency_amount),
             }).ToList();
 
@@ -109,34 +109,35 @@ namespace PlayWin
                 item.created_date = DatetimeMonthlyParse(item.created_date);
             }
 
-            revenue = revenue.GroupBy(x => new
+            var revenue_ = revenue.GroupBy(x => new
             {
                 x.created_date,
                 x.country_code,
-                x.utm_source_at_subscription,
-                x.currency_code,
                 x.operator_name,
                 x.Parked,
                 x.period_type,
-            }).Select(x => new SubscriptionRevenue
+                x.Category,
+            }).Select(x => new RawRevenuesLastMonthly
             {
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
-                utm_source_at_subscription = x.Key.utm_source_at_subscription,
-                currency_code = x.Key.currency_code,
                 operator_name = x.Key.operator_name,
                 Parked = x.Key.Parked,
                 period_type = x.Key.period_type,
-                user_id = x.GroupBy(x => x.user_id).Count(),
+                Category = x.Key.Category,
                 currency_amount = x.Sum(x => x.currency_amount),
+                usd_amount = x.Sum(x => x.usd_amount),
+                net_usd_amount = x.Sum(x => x.net_usd_amount),
+
             }).ToList();
 
-            await CsvWriter(revenue, "Raw_Revenues_Last_Monthly");
+            await CsvWriter(revenue_, "Raw_Revenues_Last_Monthly");
 
+            return revenue_;
 
         }
 
-        public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>>> New_LTV_SAMEMONTH()
+        public static async Task<Tuple<List<NewLTVSameMonth>, List<SubscriptionRevenue>>> New_LTV_SAMEMONTH()
         {
 
             var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Tawzeef\Base\TAWZEEF-subs-6190862.csv");
@@ -179,7 +180,7 @@ namespace PlayWin
                 count.currency_amount = UserSpending.currency_amount;
             }
 
-            var dateCounts = counts.GroupBy(x => new
+            var dateCountsx = counts.GroupBy(x => new
             {
                 x.created_date,
                 x.country_code,
@@ -203,31 +204,71 @@ namespace PlayWin
                 currency_amount = x.Sum(x => x.currency_amount),
             }).ToList();
 
-            var dateCountsx = dateCounts.GroupBy(x => new
-            {
-                x.created_date,
-                x.country_code,
-                x.utm_source_at_subscription,
-                x.currency_code,
-                x.operator_name,
-                x.Parked,
-                x.period_type,
-                x.tpay_activated_date,
-            }).Select(x => new SubscriptionRevenue
-            {
-                created_date = x.Key.created_date,
-                country_code = x.Key.country_code,
-                utm_source_at_subscription = x.Key.utm_source_at_subscription,
-                currency_code = x.Key.currency_code,
-                operator_name = x.Key.operator_name,
-                Parked = x.Key.Parked,
-                period_type = x.Key.period_type,
-                tpay_activated_date = x.Key.tpay_activated_date,
-                user_id = x.Count(),
-                currency_amount = x.Sum(x => x.currency_amount),
-            }).ToList();
+            //var dateCountsx = dateCounts.GroupBy(x => new
+            //{
+            //    x.created_date,
+            //    x.country_code,
+            //    x.utm_source_at_subscription,
+            //    x.currency_code,
+            //    x.operator_name,
+            //    x.Parked,
+            //    x.period_type,
+            //    x.tpay_activated_date,
+            //}).Select(x => new SubscriptionRevenue
+            //{
+            //    created_date = x.Key.created_date,
+            //    country_code = x.Key.country_code,
+            //    utm_source_at_subscription = x.Key.utm_source_at_subscription,
+            //    currency_code = x.Key.currency_code,
+            //    operator_name = x.Key.operator_name,
+            //    Parked = x.Key.Parked,
+            //    period_type = x.Key.period_type,
+            //    tpay_activated_date = x.Key.tpay_activated_date,
+            //    user_id = x.Count(),
+            //    currency_amount = x.Sum(x => x.currency_amount),
+            //}).ToList();
 
-            var dateCountsNewLtv = dateCountsx;
+            List<SubscriptionRevenue> dateCountsNewLtv = new List<SubscriptionRevenue>();
+
+            //Todo: Clonlanacak
+            foreach (var item in dateCountsx)
+            {
+                dateCountsNewLtv.Add(new SubscriptionRevenue
+
+                {
+                    Apps = item.Apps,
+                    Apps2 = item.Apps2,
+                    Category = item.Category,
+                    country2 = item.country2,
+                    country_code = item.country_code,
+                    created_date = item.created_date,
+                    currency_amount = item.currency_amount,
+                    currency_code = item.currency_code,
+                    first_subscription_subject_id = item.first_subscription_subject_id,
+                    fully_paid = item.fully_paid,
+                    Google = item.Google,
+                    Id = item.Id,
+                    is_demo = item.is_demo,
+                    is_first_sub = item.is_first_sub,
+                    model = item.model,
+                    net_usd_amount = item.net_usd_amount,
+                    operator2 = item.operator2,
+                    operator_name = item.operator_name,
+                    Parked = item.Parked,
+                    payment_gateway = item.payment_gateway,
+                    period_type = item.period_type,
+                    postquare = item.postquare,
+                    site_lang = item.site_lang,
+                    source = item.source,
+                    taboola = item.taboola,
+                    tpay_activated_date = item.tpay_activated_date,
+                    usd_amount = item.usd_amount,
+                    user_id = item.user_id,
+                    UTM5 = item.UTM5,
+                    UTM7 = item.UTM7,
+                    utm_source_at_subscription = item.utm_source_at_subscription,
+                });
+            }
 
             foreach (var item in dateCountsNewLtv)
             {
@@ -273,9 +314,9 @@ namespace PlayWin
 
                 item.source = Checkers.CategoryChecker(item.utm_source_at_subscription);
 
-                item.tpay_activated_date = item.created_date;
-
             }
+
+            dateCountsNewLtv = dateCountsNewLtv.Where(x => x.tpay_activated_date == x.created_date).ToList();
 
 
             var dateCountsNewLtv_ = dateCountsNewLtv.GroupBy(x => new
@@ -294,32 +335,29 @@ namespace PlayWin
                 operator_name = x.Key.operator_name,
                 Parked = x.Key.Parked,
                 period_type = x.Key.period_type,
-                user_id = x.Count(),
+                user_id = x.Sum(x => x.user_id),
                 usd_amount = x.Sum(x => x.usd_amount),
                 net_usd_amount = x.Sum(x => x.net_usd_amount),
             }).ToList();
 
-            foreach (var item in dateCountsNewLtv_)
-            {
-                item.Category = Checkers.CategoryChecker(item.utm_source_at_subscription);
-            }
-
             int index = 0;
             foreach (var item in dateCountsNewLtv_)
             {
+                item.Category = Checkers.CategoryChecker(item.utm_source_at_subscription);
+                item.model = "SAMEMONTH";
                 item.index = index;
                 index++;
             }
 
-            await CsvWriter(dateCountsNewLtv_, "New_LTV_SAMEMONTH");
+            //await CsvWriter(dateCountsNewLtv_, "New_LTV_SAMEMONTH");
 
 
-            return Tuple.Create(dateCountsNewLtv, dateCountsx);
+            return Tuple.Create(dateCountsNewLtv_, dateCountsx);
 
 
         }
 
-        public static async Task RawFinalReportMonthly(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
+        public static async Task<List<RawFinalReportMonthly>> RawFinalReportMonthly(Tuple<List<NewLTVSameMonth>, List<SubscriptionRevenue>> lists)
         {
 
             var dateCountsNewLtv = lists.Item1;
@@ -398,7 +436,7 @@ namespace PlayWin
                 item.created_date = DatetimeMonthlyParse(item.created_date);
             }
 
-            dateCountsx2 = dateCountsx2.GroupBy(x => new
+            var dateCountsx2_ = dateCountsx2.GroupBy(x => new
             {
                 x.created_date,
                 x.country_code,
@@ -406,7 +444,7 @@ namespace PlayWin
                 x.operator_name,
                 x.Parked,
                 x.period_type,
-            }).Select(x => new SubscriptionRevenue
+            }).Select(x => new RawFinalReportMonthly
             {
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
@@ -414,46 +452,28 @@ namespace PlayWin
                 operator_name = x.Key.operator_name,
                 Parked = x.Key.Parked,
                 period_type = x.Key.period_type,
-                user_id = x.Count(),
+                user_id = x.Sum(x => x.user_id),
                 usd_amount = x.Sum(x => x.usd_amount),
                 net_usd_amount = x.Sum(x => x.net_usd_amount),
             }).ToList();
 
-            foreach (var item in dateCountsx2)
+            int index = 0;
+            foreach (var item in dateCountsx2_)
             {
                 item.Category = Checkers.CategoryChecker(item.utm_source_at_subscription);
+                item.index = index;
+                //item.model = "OLDMODEL";
+                index++;
             }
 
-            List<RawFinalReportMonthly> RawFinalReportMonthlyList = new List<RawFinalReportMonthly>();
+            await CsvWriter(dateCountsx2_, "Raw_Final_Report_Monthly");
 
-            int f = 0;
-            foreach (var item in dateCountsx2)
-            {
-                RawFinalReportMonthly rawFinalReportMonthly = new RawFinalReportMonthly();
-                rawFinalReportMonthly.index = f;
-                f++;
-                rawFinalReportMonthly.created_date = item.created_date;
-                rawFinalReportMonthly.country_code = item.country_code;
-                rawFinalReportMonthly.utm_source_at_subscription = item.utm_source_at_subscription;
-                rawFinalReportMonthly.operator_name = item.operator_name;
-                rawFinalReportMonthly.Parked = item.Parked;
-                rawFinalReportMonthly.period_type = item.period_type;
-                rawFinalReportMonthly.user_id = item.user_id;
-                rawFinalReportMonthly.usd_amount = item.usd_amount;
-                rawFinalReportMonthly.net_usd_amount = item.net_usd_amount;
-                rawFinalReportMonthly.Category = item.Category;
-                RawFinalReportMonthlyList.Add(rawFinalReportMonthly);
-
-
-            }
-
-            await CsvWriter(RawFinalReportMonthlyList, "Raw_Final_Report_Monthly");
-
+            return dateCountsx2_;
 
         }
 
 
-        public static async Task<List<DailyCost>> RawDailyCost()
+        public static async Task<Tuple<List<RawDailyCost>, List<DailyCost>>> RawDailyCost()
         {
             var DailyCostCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\DailyCost-csv");
 
@@ -523,12 +543,12 @@ namespace PlayWin
 
             await CsvWriter(dailyCostGroup_, "Raw_daily_cost");
 
-            return dailyCost;
+            return Tuple.Create(dailyCostGroup_, dailyCost);
 
 
         }
 
-        public static async Task RawMonthlyClicks(List<DailyCost> list)
+        public static async Task<List<RawMonthlyClicks>> RawMonthlyClicks(List<DailyCost> list)
         {
 
             //var DailyCostCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\DailyCost-csv");
@@ -597,6 +617,9 @@ namespace PlayWin
             //await CsvWriter(dailyclicksGroup, "daily_clicks_monthly");
 
             await CsvWriter(dailyclicksGroup_, "Raw_monthly_clicks");
+
+            return dailyclicksGroup_;
+
 
         }
 

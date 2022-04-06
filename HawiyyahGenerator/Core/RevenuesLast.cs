@@ -1,5 +1,7 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +10,8 @@ namespace HawiyyahGenerator.Core
 {
     public class RevenuesLast
     {
+        [Key]
+        public ObjectId Id { get; set; }
         public int index_0 { get; set; }
         public string created_date { get; set; }
         public string payment_gateway { get; set; }
@@ -24,6 +28,7 @@ namespace HawiyyahGenerator.Core
         public decimal usd_amount { get; set; }
         public decimal net_usd_amount { get; set; }
         public string UTM5 { get; set; }
+        public string Index { get; set; }
 
 
     }

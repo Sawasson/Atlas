@@ -158,7 +158,7 @@ namespace HawiyyahGenerator
                 rev.Parked = item.Parked;
                 rev.user_id = item.user_id;
                 rev.currency_amount = item.currency_amount;
-                rev.index = item.index;
+                rev.Index = item.Index;
                 rev.quotes = item.quotes;
                 rev.payout_percentage = item.payout_percentage;
                 rev.usd_amount = item.usd_amount;
@@ -189,7 +189,7 @@ namespace HawiyyahGenerator
                 rev.Parked = item.Parked;
                 rev.user_id = item.user_id;
                 rev.currency_amount = item.currency_amount;
-                rev.index = item.index;
+                rev.Index = item.Index;
                 rev.quotes = item.quotes;
                 rev.payout_percentage = item.payout_percentage;
                 rev.usd_amount = item.usd_amount;
@@ -218,7 +218,7 @@ namespace HawiyyahGenerator
                 rev.Parked = item.Parked;
                 rev.user_id = item.user_id;
                 rev.currency_amount = item.currency_amount;
-                rev.index = item.index;
+                rev.Index = item.Index;
                 rev.quotes = item.quotes;
                 rev.payout_percentage = item.payout_percentage;
                 rev.usd_amount = item.usd_amount;
@@ -227,14 +227,14 @@ namespace HawiyyahGenerator
                 revenuesLast_peopleReveal.Add(rev);
             }
 
-            await CsvWriter (revenuesLast_peopleReveal, "revenuesLast_peopleReveal");
+            //await CsvWriter (revenuesLast_peopleReveal, "revenuesLast_peopleReveal");
 
             return Tuple.Create(revenuesLast, revenuesLast_hawiyyahOnly, revenuesLast_peopleReveal);
 
 
         }
 
-        public static async Task<Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>>> NewLTVSameMonth()
+        public static async Task<Tuple<List<NewLTVSameMonth>, List<SubscriptionRevenue>>> NewLTVSameMonth()
         {
 
             var AllSubsCSV = await System.IO.File.ReadAllLinesAsync(@"C:\temp\Hawiyyah\Base\HAWIYYAH-subs-2304771.csv");
@@ -442,7 +442,7 @@ namespace HawiyyahGenerator
             dateCountsNewLtv = dateCountsNewLtv.Where(x => x.tpay_activated_date == x.created_date).ToList();
 
 
-            dateCountsNewLtv = dateCountsNewLtv.GroupBy(x => new
+            var dateCountsNewLtv_ = dateCountsNewLtv.GroupBy(x => new
             {
                 x.created_date,
                 x.country_code,
@@ -450,7 +450,7 @@ namespace HawiyyahGenerator
                 x.operator_name,
                 x.Parked,
                 x.period_type,
-            }).Select(x => new SubscriptionRevenue
+            }).Select(x => new NewLTVSameMonth
             {
                 created_date = x.Key.created_date,
                 country_code = x.Key.country_code,
@@ -464,7 +464,7 @@ namespace HawiyyahGenerator
             }).ToList();
 
             int index = 0;
-            foreach (var item in dateCountsNewLtv)
+            foreach (var item in dateCountsNewLtv_)
             {
                 item.Category = Checkers.CategoryChecker(item.utm_source_at_subscription);
                 item.model = "SAMEMONTH";
@@ -474,10 +474,10 @@ namespace HawiyyahGenerator
 
             //await CsvWriter(dateCountsNewLtv, "New_LTV_SAMEMONTH");
 
-            return Tuple.Create(dateCountsNewLtv, dateCountsx);
+            return Tuple.Create(dateCountsNewLtv_, dateCountsx);
         }
 
-        public static async Task<List<LTVModels>> LTVModels(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
+        public static async Task<List<LTVModels>> LTVModels(Tuple<List<LTVModels>, List<SubscriptionRevenue>> lists)
         {
             List<LTVModels> lTVModels = new List<LTVModels>();
 
@@ -549,7 +549,7 @@ namespace HawiyyahGenerator
 
         }
 
-        public static async Task<Tuple<List<FirstSubReport>, List<FirstSubReport>, List<FirstSubReport>>> FirstSubReport(Tuple<List<SubscriptionRevenue>, List<SubscriptionRevenue>> lists)
+        public static async Task<Tuple<List<FirstSubReport>, List<FirstSubReport>, List<FirstSubReport>>> FirstSubReport(Tuple<List<NewLTVSameMonth>, List<SubscriptionRevenue>> lists)
         {
 
             var PayoutsCSV = System.IO.File.ReadAllLines(@"C:\temp\operator_payouts.csv");

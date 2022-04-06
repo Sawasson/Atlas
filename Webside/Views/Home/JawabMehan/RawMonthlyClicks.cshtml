@@ -1,4 +1,4 @@
-﻿@model List<JawabTawzeef.Core.RawDailyCost>
+﻿@model IEnumerable<JawabMehan.Core.RawMonthlyClicks>
 
 <h1 style="text-align:center">@ViewBag.Title</h1>
 <br />
@@ -10,9 +10,9 @@
             <tr>
                 <th>Created Date </th>
                 <th>Country Code </th>
-                <th>Search Cost</th>
-                <th>GDN Cost</th>
-                <th>Total Cost</th>
+                <th>Clicks</th>
+                <th>GDN Clicks</th>
+                <th>Total Clicks</th>
             </tr>
         </thead>
         @foreach (var d in Model)
@@ -20,12 +20,11 @@
             <tr>
                 <td>@d.created_date</td>
                 <td>@d.country_code</td>
-                <td>@Math.Round(d.SearchCost, 2)</td>
-                <td>@Math.Round(d.GDNCost, 2)</td>
-                <td>@Math.Round(d.TotalCost, 2)</td>
+                <td>@d.Clicks</td>
+                <td>@d.GDNClicks</td>
+                <td>@d.Total_Clicks</td>
 
             </tr>
-
         }
     </table>
 </div>
