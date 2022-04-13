@@ -8,7 +8,7 @@ namespace MongoDB
 {
     public class MongoHelper
     {
-        static MongoDbGenericRepository db = new MongoDbGenericRepository("mongodb://marketing:Marketing2019!@157.90.29.241:27017", "NewProject");
+        static MongoDbGenericRepository db = new MongoDbGenericRepository("mongodb://", "NewProject");
 
 
         //public static async Task<Subscription> GetSubscriptionLastRecord(string Project)
